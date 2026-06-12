@@ -1,0 +1,180 @@
+/* Syntax highlighting — GitHub Light / GitHub Dark Dimmed
+   Scoped to Tamagui's t_light / t_dark theme classes */
+
+/* CodeBlock copy button — fades in on hover (and stays visible on focus) */
+.sid-codeblock .sid-copy-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.sid-codeblock:hover .sid-copy-btn,
+.sid-codeblock .sid-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+}
+code.hljs {
+  padding: 3px 5px;
+}
+
+/* ── Light theme ── */
+/* Background is supplied by the themed CodeBlock wrapper (transparent here). */
+.t_light .hljs {
+  color: #24292e;
+  background: transparent;
+}
+.t_light .hljs-doctag,
+.t_light .hljs-keyword,
+.t_light .hljs-meta .hljs-keyword,
+.t_light .hljs-template-tag,
+.t_light .hljs-template-variable,
+.t_light .hljs-type,
+.t_light .hljs-variable.language_ {
+  color: #d73a49;
+}
+.t_light .hljs-title,
+.t_light .hljs-title.class_,
+.t_light .hljs-title.class_.inherited__,
+.t_light .hljs-title.function_ {
+  color: #6f42c1;
+}
+.t_light .hljs-attr,
+.t_light .hljs-attribute,
+.t_light .hljs-literal,
+.t_light .hljs-meta,
+.t_light .hljs-number,
+.t_light .hljs-operator,
+.t_light .hljs-variable,
+.t_light .hljs-selector-attr,
+.t_light .hljs-selector-class,
+.t_light .hljs-selector-id {
+  color: #005cc5;
+}
+.t_light .hljs-regexp,
+.t_light .hljs-string,
+.t_light .hljs-meta .hljs-string {
+  color: #032f62;
+}
+.t_light .hljs-built_in,
+.t_light .hljs-symbol {
+  color: #e36209;
+}
+.t_light .hljs-comment,
+.t_light .hljs-code,
+.t_light .hljs-formula {
+  color: #6a737d;
+}
+.t_light .hljs-name,
+.t_light .hljs-quote,
+.t_light .hljs-selector-tag,
+.t_light .hljs-selector-pseudo {
+  color: #22863a;
+}
+.t_light .hljs-subst {
+  color: #24292e;
+}
+.t_light .hljs-section {
+  color: #005cc5;
+  font-weight: bold;
+}
+.t_light .hljs-bullet {
+  color: #735c0f;
+}
+.t_light .hljs-emphasis {
+  color: #24292e;
+  font-style: italic;
+}
+.t_light .hljs-strong {
+  color: #24292e;
+  font-weight: bold;
+}
+.t_light .hljs-addition {
+  color: #22863a;
+  background-color: #f0fff4;
+}
+.t_light .hljs-deletion {
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+
+/* ── Dark theme ── */
+.t_dark .hljs {
+  color: #adbac7;
+  background: transparent;
+}
+.t_dark .hljs-doctag,
+.t_dark .hljs-keyword,
+.t_dark .hljs-meta .hljs-keyword,
+.t_dark .hljs-template-tag,
+.t_dark .hljs-template-variable,
+.t_dark .hljs-type,
+.t_dark .hljs-variable.language_ {
+  color: #f47067;
+}
+.t_dark .hljs-title,
+.t_dark .hljs-title.class_,
+.t_dark .hljs-title.class_.inherited__,
+.t_dark .hljs-title.function_ {
+  color: #dcbdfb;
+}
+.t_dark .hljs-attr,
+.t_dark .hljs-attribute,
+.t_dark .hljs-literal,
+.t_dark .hljs-meta,
+.t_dark .hljs-number,
+.t_dark .hljs-operator,
+.t_dark .hljs-variable,
+.t_dark .hljs-selector-attr,
+.t_dark .hljs-selector-class,
+.t_dark .hljs-selector-id {
+  color: #6cb6ff;
+}
+.t_dark .hljs-regexp,
+.t_dark .hljs-string,
+.t_dark .hljs-meta .hljs-string {
+  color: #96d0ff;
+}
+.t_dark .hljs-built_in,
+.t_dark .hljs-symbol {
+  color: #f69d50;
+}
+.t_dark .hljs-comment,
+.t_dark .hljs-code,
+.t_dark .hljs-formula {
+  color: #768390;
+}
+.t_dark .hljs-name,
+.t_dark .hljs-quote,
+.t_dark .hljs-selector-tag,
+.t_dark .hljs-selector-pseudo {
+  color: #8ddb8c;
+}
+.t_dark .hljs-subst {
+  color: #adbac7;
+}
+.t_dark .hljs-section {
+  color: #316dca;
+  font-weight: bold;
+}
+.t_dark .hljs-bullet {
+  color: #eac55f;
+}
+.t_dark .hljs-emphasis {
+  color: #adbac7;
+  font-style: italic;
+}
+.t_dark .hljs-strong {
+  color: #adbac7;
+  font-weight: bold;
+}
+.t_dark .hljs-addition {
+  color: #b4f1b4;
+  background-color: #1b4721;
+}
+.t_dark .hljs-deletion {
+  color: #ffd8d3;
+  background-color: #78191b;
+}

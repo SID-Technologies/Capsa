@@ -1,0 +1,99 @@
+---
+title: Writing Content
+description: Frontmatter, Markdown, and the MDX components Capsa ships — callouts, code tabs, API badges, and more.
+order: 1
+---
+
+# Writing Content
+
+Pages are `.mdx`: standard Markdown plus React components when you want them.
+This page is both the reference and a live demo of everything available.
+
+## Frontmatter
+
+Optional YAML at the top of a file controls metadata:
+
+```yaml title="frontmatter.mdx"
+---
+title: Writing Content       # overrides the filename-derived title
+description: ...              # search snippets + SEO meta + social cards
+order: 1                      # sort order within the sidebar group
+hidden: true                 # draft — excluded from nav, search, and sitemap
+product: acme                 # scopes the page to a product (see configuration)
+---
+```
+
+## Callouts
+
+Write `:::note`, `:::tip`, `:::warning`, or `:::danger`. An optional `[Title]`
+overrides the label.
+
+:::note
+Callouts use the theme's semantic tokens, so they re-color per theme and in
+light/dark automatically.
+:::
+
+:::warning[Heads up]
+Wrap a label in brackets to set a custom title.
+:::
+
+## Code blocks
+
+Fenced code gets a language label, a copy button, and an optional filename via
+the `title=` meta:
+
+```ts title="example.ts"
+export function greet(name: string) {
+  return `Hello, ${name}`;
+}
+```
+
+## Code tabs
+
+Wrap multiple fenced blocks in `<CodeTabs>`; the chosen language persists across
+**every** code-tab group on the site:
+
+<CodeTabs>
+
+```bash
+curl https://api.example.com/v1/widgets
+```
+
+```ts
+await client.widgets.list();
+```
+
+```python
+client.widgets.list()
+```
+
+</CodeTabs>
+
+## API method references
+
+Use `<ApiMethod>` inline to link prose to the API reference:
+
+<ApiMethod method="POST" path="/v1/widgets" desc="Create a widget" />
+<ApiMethod method="GET" path="/v1/widgets/{id}" desc="Fetch a widget" />
+
+## See-also cards
+
+`<SeeAlso>` wraps a Markdown link list in a discovery card:
+
+<SeeAlso>
+
+- [Configuration](/docs/configuration/configuration)
+- [Navigation](/docs/configuration/navigation)
+
+</SeeAlso>
+
+## Tables
+
+Standard Markdown tables scroll horizontally on small screens:
+
+| Component   | Use it for                          |
+|-------------|-------------------------------------|
+| `CodeTabs`  | Multi-language code samples         |
+| `Callout`   | Notes, tips, warnings, dangers      |
+| `ApiMethod` | Inline endpoint references          |
+| `SeeAlso`   | Related-page discovery cards        |
