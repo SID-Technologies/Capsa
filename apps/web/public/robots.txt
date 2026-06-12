@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# sitemap.xml is generated at build when VITE_SITE_URL is set.
+Sitemap: /sitemap.xml

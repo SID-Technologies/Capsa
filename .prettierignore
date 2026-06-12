@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+pnpm-lock.yaml
+LICENSE
+# Generated artifacts
+apps/web/public/search-index.json
+apps/web/public/docs-manifest.json
+apps/web/public/sitemap.xml
+apps/web/public/llms.txt
+apps/web/public/llms-full.txt
+apps/web/public/md
+# Docs prose — don't let Prettier reflow MDX content
+apps/web/content
