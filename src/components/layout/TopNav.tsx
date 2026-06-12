@@ -9,9 +9,9 @@ import {
   IconSettings,
   IconMenu2,
 } from '@tabler/icons-react';
-import { useThemeController } from '@repo/configs/themeController';
-import type { ThemeMode, ThemeStyle } from '@repo/configs/themeController';
-import { PINNED_THEME_STYLE } from '@repo/configs/themeController';
+import { useThemeController } from '@/theme/themeController';
+import type { ThemeMode, ThemeStyle } from '@/theme/themeController';
+import { PINNED_THEME_STYLE } from '@/theme/themeController';
 
 import { useAuth } from '../../contexts/AuthContext';
 import type { NavTab } from '../../navigation';

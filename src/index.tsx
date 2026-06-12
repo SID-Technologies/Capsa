@@ -8,8 +8,8 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthKitProvider } from '@workos-inc/authkit-react';
-import { ThemeProvider, useThemeController } from '@repo/configs/themeController';
-import config from '@repo/configs/tamagui.config';
+import { ThemeProvider, useThemeController } from '@/theme/themeController';
+import config from '@/theme/tamagui.config';
 import { TamaguiProvider, Theme } from 'tamagui';
 
 import App from './App';

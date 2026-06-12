@@ -1,0 +1,47 @@
+# Configuration
+
+Capsa is configured almost entirely through environment variables, so one
+codebase can power many deployments.
+
+## Environment variables
+
+All are optional. A bare deploy needs none of them.
+
+| Variable | Effect |
+|----------|--------|
+| `VITE_SITE_NAME` | Brand shown in the top bar, titles, footer. Defaults to `Capsa`. |
+| `VITE_SITE_ORG` | Footer copyright name. Defaults to `VITE_SITE_NAME`. |
+| `VITE_DEFAULT_THEME_STYLE` | Pin a theme (`default`, `aurora`, `steel`, `retro`, `shadcn`) and hide the switcher. |
+| `VITE_SITE_URL` | Base URL — enables `sitemap.xml` and absolute links in `llms.txt`. |
+| `VITE_PRODUCT` | Scope nav + search to one product folder (multi-product setups). |
+| `VITE_GITHUB_URL` / `VITE_STATUS_URL` / `VITE_SUPPORT_URL` | Footer links — each renders only if set. |
+| `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` | Enable PostHog analytics. Off unless the key is set. |
+| `VITE_WORKOS_CLIENT_ID` | Opt **into** auth (see below). |
+| `VITE_DEV_BYPASS_AUTH` | Force public access even when auth is configured. |
+
+## Theming
+
+Five styles ship in `packages/configs/src/themes.ts`, each with light + dark:
+`default`, `aurora`, `steel`, `retro`, `shadcn`. Users switch via the gear menu;
+pin one with `VITE_DEFAULT_THEME_STYLE` to lock branding for a public site.
+
+Colors are theme tokens — components never hardcode hex — so adding a brand
+theme is cloning a block in `themes.ts` and registering it in `themeController`.
+
+## API reference
+
+Drop an OpenAPI spec at `public/openapi/v1.yaml` and it renders at `/docs/api`
+(Scalar). Register versions in `src/apiVersions.ts`; add a second and a version
+switcher appears automatically.
+
+## Authentication
+
+Capsa is **public by default**. To gate the docs, set `VITE_WORKOS_CLIENT_ID`
+and wire `src/contexts/AuthContext.tsx` to your provider — the included WorkOS
+flow is a working example. With no client id, the auth providers never mount.
+
+## Generated artifacts
+
+Every build writes to `public/`: `search-index.json` (⌘K), `docs-manifest.json`
+(nav/SEO), `sitemap.xml`, `llms.txt` + `llms-full.txt` (AI agents), and per-page
+Markdown under `md/` (the "Copy page" action). All are git-ignored.

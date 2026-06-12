@@ -8,7 +8,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const contentDir = resolve(here, '..', 'apps/web/content');
+const contentDir = resolve(here, '..', 'content');
 
 // Real routes that aren't backed by a content file.
 const ROUTE_WHITELIST = new Set(['api']);

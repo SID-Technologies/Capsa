@@ -18,7 +18,7 @@ const source = process.env.OPENAPI_SOURCE;
 if (!source) process.exit(0); // nothing configured — use the committed spec
 
 const src = resolve(source);
-const dest = resolve(repoRoot, 'apps/web/public/openapi/v1.yaml');
+const dest = resolve(repoRoot, 'public/openapi/v1.yaml');
 
 if (!existsSync(src)) {
   console.warn(`[sync-openapi] OPENAPI_SOURCE not found at ${src} — using committed spec.`);

@@ -4,7 +4,7 @@ import { ApiReferenceReact } from '@scalar/api-reference-react';
 // it here guarantees Vite pulls Scalar's CSS into the lazy chunk.
 import '@scalar/api-reference-react/style.css';
 import { useTheme } from 'tamagui';
-import { useThemeController } from '@repo/configs/themeController';
+import { useThemeController } from '@/theme/themeController';
 
 import { apiVersions } from '../apiVersions';
 

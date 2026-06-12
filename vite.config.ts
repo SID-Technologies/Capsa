@@ -32,7 +32,7 @@ export default defineConfig({
       llmsFullFile: path.resolve(__dirname, './public/llms-full.txt'),
       // Per-page raw markdown for the "Copy page" action (served at /md/<slug>.md).
       pagesDir: path.resolve(__dirname, './public/md'),
-      siteTitle: process.env.VITE_PRODUCT ? 'JanusLedger Docs' : 'SID Docs',
+      siteTitle: process.env.VITE_SITE_NAME || 'Capsa',
     }),
     // MDX must run before the React plugin so its JSX output is transformed.
     {
@@ -95,7 +95,7 @@ export default defineConfig({
             if (id.includes('@tabler')) return 'vendor-icons';
             if (id.includes('@mdx-js')) return 'vendor-mdx';
           }
-          if (id.includes('/packages/configs/')) return 'vendor-themes';
+          if (id.includes('/src/theme/')) return 'vendor-themes';
         },
       },
     },
@@ -105,7 +105,7 @@ export default defineConfig({
     port: 3001,
     open: true,
     fs: {
-      allow: [searchForWorkspaceRoot(process.cwd()), path.resolve(__dirname, '../../node_modules')],
+      allow: [searchForWorkspaceRoot(process.cwd()), path.resolve(__dirname, 'node_modules')],
     },
   },
 });

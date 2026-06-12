@@ -331,7 +331,7 @@ $overlay       - Modal/drawer backdrop
 <View backgroundColor="$color3" />  // 3rd color in palette
 
 // Label colors (for tags, categories)
-import { LABEL_COLOR_MAP } from '@repo/configs/themes';
+import { LABEL_COLOR_MAP } from '@/theme/themes';
 <Badge backgroundColor={LABEL_COLOR_MAP.labelBlue} />
 
 // Accessing theme in component
