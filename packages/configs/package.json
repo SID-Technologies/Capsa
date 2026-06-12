@@ -19,8 +19,8 @@
     "@tamagui/colors": "^1.135.2",
     "@tamagui/config": "^1.135.2",
     "@types/node": "^22.12.0",
-    "@types/react": "^19.0.0",
-    "react": "^19.0.0",
+    "@types/react": "^19.2.17",
+    "react": "^19.2.7",
     "tamagui": "^1.135.2",
     "typescript": "^5.7.3"
   }
