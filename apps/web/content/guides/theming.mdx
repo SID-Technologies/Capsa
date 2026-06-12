@@ -1,0 +1,84 @@
+---
+title: Theming
+description: Use a built-in theme, pin one for your brand, or add your own.
+order: 2
+---
+
+# Theming
+
+Capsa ships five theme styles, each with light and dark modes:
+
+| Style | Look |
+|-------|------|
+| `default` | Neutral, blue accent |
+| `aurora` | Purple, dark-first |
+| `steel` | Silver/metallic, steel-blue accent |
+| `retro` | Warm, hard shadows, sharp corners |
+| `shadcn` | Slate, minimal (shadcn/ui palette) |
+
+Users switch via the gear menu in the top bar (mode + style).
+
+## Pin a theme for your brand
+
+For a single-brand site, lock one style and hide the switcher:
+
+```bash
+VITE_DEFAULT_THEME_STYLE=steel
+```
+
+Mode (light/dark/system) still works; only the style picker is hidden.
+
+## How theming works
+
+Colors are **theme tokens**, never hardcoded hex. Components reference tokens
+like `$accent`, `$color10`, `$borderColor` (resolved at runtime via Tamagui), so
+switching themes recolors the whole UI — including code blocks, callouts, and the
+command palette.
+
+Themes live in `packages/configs/src/themes.ts` and are registered in
+`packages/configs/src/themeController.tsx`.
+
+## Add a brand theme
+
+The fastest path is to clone an existing style and recolor it.
+
+1. **Copy a preset block** in `themes.ts` — the `steel` block is a good neutral
+   starting point. Duplicate its palette and semantic-color objects, renaming
+   `steel*` → `brand*`:
+
+   ```ts title="packages/configs/src/themes.ts"
+   const brandLightPalette = [ /* 12 cool-to-dark steps */ ];
+   const brandDarkPalette  = [ /* 12 dark-to-light steps */ ];
+   const brandSemanticColorsLight = { accent: '#7c3aed', /* ...~50 tokens */ };
+   const brandSemanticColorsDark  = { accent: '#a78bfa', /* ... */ };
+   ```
+
+2. **Register it** in the `childrenThemes` of the `createThemes({...})` call:
+
+   ```ts
+   brand: {
+     palette: { light: brandLightPalette, dark: brandDarkPalette },
+     extra: {
+       light: { ...extraColors, ...brandSemanticColorsLight },
+       dark:  { ...extraColors, ...brandSemanticColorsDark },
+     },
+   },
+   ```
+
+3. **Add it to the type unions** in `themeController.tsx`
+   (`ThemeStyle`, `TamaguiThemeName`) and the `resolveThemeName` switch.
+
+4. **List it** in the style switcher — `styleOptions` in
+   `src/components/layout/TopNav.tsx`.
+
+5. **Pin it** with `VITE_DEFAULT_THEME_STYLE=brand`.
+
+:::tip
+Start from the closest existing preset and change only the accent + neutral
+palettes. The ~50 semantic tokens mostly cascade from those.
+:::
+
+## Fonts
+
+The body/heading font is **Space Grotesk** (`packages/configs/src/fonts.ts`).
+Swap it by changing that file and the `@fontsource` import in `src/index.tsx`.

@@ -1,0 +1,8 @@
+{
+  "name": "Capsa",
+  "short_name": "Capsa",
+  "icons": [{ "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }],
+  "theme_color": "#3b82f6",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

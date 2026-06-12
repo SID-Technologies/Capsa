@@ -1,0 +1,293 @@
+/* Docs UI chrome that's easier in plain CSS than Tamagui inline styles:
+   heading hover-anchors, table overflow fade, and print rules. */
+
+/* ── Heading copy-link anchors (2.6) ───────────────────────────────────── */
+.sid-heading-anchor {
+  opacity: 0;
+  margin-left: 8px;
+  color: var(--colorPress, #999);
+  display: inline-flex;
+  vertical-align: middle;
+  transition: opacity 0.15s ease;
+}
+.sid-heading:hover .sid-heading-anchor,
+.sid-heading-anchor:focus-visible {
+  opacity: 0.7;
+}
+.sid-heading-anchor:hover {
+  opacity: 1 !important;
+}
+
+/* ── Table horizontal-scroll fade (2.4) ────────────────────────────────── */
+.sid-table-wrap {
+  position: relative;
+}
+@media (max-width: 768px) {
+  .sid-table-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(127, 127, 127, 0), var(--background, #fff));
+  }
+}
+
+/* ── Mobile nav drawer (2.3) ───────────────────────────────────────────── */
+.sid-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+.sid-drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sid-drawer-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+  z-index: 1001;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
+}
+.sid-drawer-panel.open {
+  transform: translateX(0);
+}
+/* The sticky sidebar takes over at the md breakpoint (768px). */
+@media (min-width: 768px) {
+  .sid-drawer-overlay,
+  .sid-drawer-panel {
+    display: none;
+  }
+}
+
+/* ── ⌘K command palette ────────────────────────────────────────────────── */
+.sid-cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+.sid-cmdk-panel {
+  width: 100%;
+  max-width: 600px;
+  max-height: 60vh;
+  margin: 0 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  border: 1px solid var(--borderColor);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.sid-cmdk-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--borderColor);
+  color: var(--colorPress);
+}
+.sid-cmdk-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--color12);
+}
+.sid-cmdk-results {
+  overflow-y: auto;
+  padding: 6px;
+}
+.sid-cmdk-empty {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--colorPress);
+  font-family: 'Space Grotesk', sans-serif;
+}
+.sid-cmdk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+}
+.sid-cmdk-item.active {
+  background: var(--color4);
+}
+.sid-cmdk-item-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.sid-cmdk-item-title {
+  font-size: 14px;
+  color: var(--color12);
+  font-weight: 500;
+}
+.sid-cmdk-item-heading {
+  font-size: 12px;
+  color: var(--accent);
+}
+.sid-cmdk-item-cat {
+  font-size: 11px;
+  color: var(--colorPress);
+  text-transform: capitalize;
+}
+.sid-cmdk-enter {
+  color: var(--colorPress);
+}
+.sid-cmdk-footer {
+  display: flex;
+  gap: 18px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--borderColor);
+  font-size: 11px;
+  color: var(--colorPress);
+  font-family: 'Space Grotesk', sans-serif;
+}
+.sid-cmdk-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin: 0 2px;
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: inherit;
+  background: var(--color2);
+  color: var(--color10);
+}
+
+/* ── Table of contents (right rail) ────────────────────────────────────── */
+/* The TOC lives in its own column OUTSIDE the scrolling content (see DocPage),
+   so it stays put while the middle column scrolls — no `position: sticky`
+   needed. This column scrolls its own overflow only when the TOC is very long. */
+.sid-toc-col {
+  overflow-y: auto;
+}
+.sid-toc-link {
+  opacity: 0.92;
+}
+.sid-toc-link:hover {
+  opacity: 1;
+  color: var(--toc-hover) !important;
+  border-left-color: var(--toc-hover) !important;
+}
+
+/* ── Page actions (copy / view-as-markdown / open-in-LLM) ──────────────── */
+.sid-pageactions {
+  position: relative;
+  display: inline-flex;
+}
+.sid-pageactions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--color11);
+  background: var(--background);
+  border: 1px solid var(--borderColor);
+  cursor: pointer;
+}
+.sid-pageactions-btn:hover {
+  background: var(--color3);
+}
+.sid-pageactions-main {
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+}
+.sid-pageactions-caret {
+  border-radius: 0 8px 8px 0;
+  padding: 0 6px;
+}
+.sid-pageactions-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 50;
+  min-width: 200px;
+  padding: 4px;
+  background: var(--background);
+  border: 1px solid var(--borderColor);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+.sid-pageactions-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--color11);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sid-pageactions-item:hover {
+  background: var(--color3);
+}
+.sid-pageactions-item span {
+  color: var(--colorPress);
+  display: inline-flex;
+}
+
+/* ── Print / PDF (2.7) ──────────────────────────────────────────────────── */
+@media print {
+  .sid-sidebar,
+  .sid-topnav,
+  .sid-toc,
+  .sid-copy-btn,
+  .sid-heading-anchor {
+    display: none !important;
+  }
+  .sid-doc-content {
+    max-width: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .sid-codeblock pre,
+  pre {
+    white-space: pre-wrap !important;
+    word-break: break-word;
+    border: 1px solid #ddd;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
