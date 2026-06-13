@@ -12,7 +12,7 @@ lazy-loaded, so it stays out of the main bundle until visited.
 
 ## Add your spec
 
-1. Drop your OpenAPI document at `apps/web/public/openapi/v1.yaml`
+1. Drop your OpenAPI document at `public/openapi/v1.yaml`
    (replacing the example spec).
 2. That's it — visit `/docs/api`.
 
@@ -127,7 +127,7 @@ included `scripts/sync-openapi.mjs` copies a spec into `public/openapi/v1.yaml`
 when `OPENAPI_SOURCE` is set — wire it into your build or a CI step:
 
 ```bash
-OPENAPI_SOURCE=../api/openapi.yaml pnpm dev:web
+OPENAPI_SOURCE=../api/openapi.yaml pnpm dev
 ```
 
 A common pattern: the API repo commits its spec to this repo (or triggers a

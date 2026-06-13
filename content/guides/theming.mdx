@@ -35,8 +35,8 @@ like `$accent`, `$color10`, `$borderColor` (resolved at runtime via Tamagui), so
 switching themes recolors the whole UI — including code blocks, callouts, and the
 command palette.
 
-Themes live in `packages/configs/src/themes.ts` and are registered in
-`packages/configs/src/themeController.tsx`.
+Themes live in `src/theme/themes.ts` and are registered in
+`src/theme/themeController.tsx`.
 
 ## Add a brand theme
 
@@ -46,7 +46,7 @@ The fastest path is to clone an existing style and recolor it.
    starting point. Duplicate its palette and semantic-color objects, renaming
    `steel*` → `brand*`:
 
-   ```ts title="packages/configs/src/themes.ts"
+   ```ts title="src/theme/themes.ts"
    const brandLightPalette = [ /* 12 cool-to-dark steps */ ];
    const brandDarkPalette  = [ /* 12 dark-to-light steps */ ];
    const brandSemanticColorsLight = { accent: '#7c3aed', /* ...~50 tokens */ };
@@ -80,5 +80,5 @@ palettes. The ~50 semantic tokens mostly cascade from those.
 
 ## Fonts
 
-The body/heading font is **Space Grotesk** (`packages/configs/src/fonts.ts`).
+The body/heading font is **Space Grotesk** (`src/theme/fonts.ts`).
 Swap it by changing that file and the `@fontsource` import in `src/index.tsx`.

@@ -21,8 +21,8 @@ for free. Two ways: the dashboard (Git integration) or the Wrangler CLI.
 |---------|-------|
 | Framework preset | None |
 | Root directory | `/` (repo root) |
-| Build command | `pnpm install && pnpm build:web` |
-| Build output directory | `apps/web/dist` |
+| Build command | `pnpm install && pnpm build` |
+| Build output directory | `dist` |
 
 4. Under **Settings → Variables and Secrets**, add a **build variable** to pin
    Node, plus any site config:
@@ -45,7 +45,7 @@ absolute URLs.
 
 Capsa is a single-page app, so deep links like `/docs/guides/intro` must serve
 `index.html` and let the client router take over. This repo ships
-`apps/web/public/_redirects`:
+`public/_redirects`:
 
 ```text title="public/_redirects"
 /*    /index.html   200
@@ -72,14 +72,14 @@ preview deploys at a staging `VITE_SITE_URL`.
 ## Option B — Wrangler (CLI)
 
 ```bash
-pnpm build:web
-npx wrangler pages deploy apps/web/dist --project-name your-docs
+pnpm build
+npx wrangler pages deploy dist --project-name your-docs
 ```
 
 Set variables in the dashboard, or per deploy with `--var`:
 
 ```bash
-npx wrangler pages deploy apps/web/dist --project-name your-docs \
+npx wrangler pages deploy dist --project-name your-docs \
   --var VITE_SITE_NAME:"Acme Docs"
 ```
 

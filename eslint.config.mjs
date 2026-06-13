@@ -7,14 +7,7 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: [
-      '**/dist/**',
-      '**/build/**',
-      '**/node_modules/**',
-      '**/.tamagui/**',
-      'apps/web/public/**',
-      'packages/configs/dist/**',
-    ],
+    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**', '**/.tamagui/**', 'public/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -41,7 +34,7 @@ export default tseslint.config(
   },
   // Node scripts and config files.
   {
-    files: ['scripts/**/*.{js,mjs}', '*.config.{js,ts}', 'apps/web/vite-plugins/**/*.ts'],
+    files: ['scripts/**/*.{js,mjs}', '*.config.{js,ts}', 'vite-plugins/**/*.ts'],
     languageOptions: { globals: { ...globals.node } },
   },
   prettier,

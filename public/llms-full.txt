@@ -1,4 +1,4 @@
-# SID Docs
+# Capsa
 
 ---
 URL: /docs/deploy/cloudflare
@@ -26,8 +26,8 @@ for free. Two ways: the dashboard (Git integration) or the Wrangler CLI.
 |---------|-------|
 | Framework preset | None |
 | Root directory | `/` (repo root) |
-| Build command | `pnpm install && pnpm build:web` |
-| Build output directory | `apps/web/dist` |
+| Build command | `pnpm install && pnpm build` |
+| Build output directory | `dist` |
 
 4. Under **Settings → Variables and Secrets**, add a **build variable** to pin
    Node, plus any site config:
@@ -50,7 +50,7 @@ absolute URLs.
 
 Capsa is a single-page app, so deep links like `/docs/guides/intro` must serve
 `index.html` and let the client router take over. This repo ships
-`apps/web/public/_redirects`:
+`public/_redirects`:
 
 ```text title="public/_redirects"
 /*    /index.html   200
@@ -77,14 +77,14 @@ preview deploys at a staging `VITE_SITE_URL`.
 ## Option B — Wrangler (CLI)
 
 ```bash
-pnpm build:web
-npx wrangler pages deploy apps/web/dist --project-name your-docs
+pnpm build
+npx wrangler pages deploy dist --project-name your-docs
 ```
 
 Set variables in the dashboard, or per deploy with `--var`:
 
 ```bash
-npx wrangler pages deploy apps/web/dist --project-name your-docs \
+npx wrangler pages deploy dist --project-name your-docs \
   --var VITE_SITE_NAME:"Acme Docs"
 ```
 
@@ -144,11 +144,12 @@ edit.
 ## How it's organized
 
 ```
-apps/web/
+capsa/
 ├── content/        # your docs — Markdown/MDX files map to routes
 │   └── guides/intro.mdx  →  /docs/guides/intro
 ├── src/            # the Capsa app (components, layout, hooks)
-│   └── navigation.ts     # the sidebar + section tabs
+│   ├── navigation.ts     # the sidebar + section tabs
+│   └── theme/            # themes + Tamagui config
 └── public/openapi/ # your OpenAPI spec(s) for the API reference
 ```
 
@@ -347,7 +348,7 @@ All are optional. A bare deploy needs none of them.
 
 ## Theming
 
-Five styles ship in `packages/configs/src/themes.ts`, each with light + dark:
+Five styles ship in `src/theme/themes.ts`, each with light + dark:
 `default`, `aurora`, `steel`, `retro`, `shadcn`. Users switch via the gear menu;
 pin one with `VITE_DEFAULT_THEME_STYLE` to lock branding for a public site.
 
@@ -395,11 +396,11 @@ pnpm install
 ## Run it
 
 ```bash
-pnpm dev:web
+pnpm dev
 ```
 
 That starts the dev server at `http://localhost:3001`. Edit any file under
-`apps/web/content/` and the page reloads.
+`content/` and the page reloads.
 
 ## Add a page
 
@@ -430,11 +431,11 @@ pages appear in the sidebar. Use `{ auto: 'guides' }` to include a whole folder.
 ## Build
 
 ```bash
-pnpm build:web
+pnpm build
 ```
 
 The build also generates the search index, sitemap, `llms.txt`, and per-page
-Markdown into `apps/web/public/`. Output lands in `apps/web/dist/`.
+Markdown into `public/`. Output lands in `dist/`.
 
 ## Publish
 
@@ -479,8 +480,8 @@ like `$accent`, `$color10`, `$borderColor` (resolved at runtime via Tamagui), so
 switching themes recolors the whole UI — including code blocks, callouts, and the
 command palette.
 
-Themes live in `packages/configs/src/themes.ts` and are registered in
-`packages/configs/src/themeController.tsx`.
+Themes live in `src/theme/themes.ts` and are registered in
+`src/theme/themeController.tsx`.
 
 ## Add a brand theme
 
@@ -490,7 +491,7 @@ The fastest path is to clone an existing style and recolor it.
    starting point. Duplicate its palette and semantic-color objects, renaming
    `steel*` → `brand*`:
 
-   ```ts title="packages/configs/src/themes.ts"
+   ```ts title="src/theme/themes.ts"
    const brandLightPalette = [ /* 12 cool-to-dark steps */ ];
    const brandDarkPalette  = [ /* 12 dark-to-light steps */ ];
    const brandSemanticColorsLight = { accent: '#7c3aed', /* ...~50 tokens */ };
@@ -524,7 +525,7 @@ palettes. The ~50 semantic tokens mostly cascade from those.
 
 ## Fonts
 
-The body/heading font is **Space Grotesk** (`packages/configs/src/fonts.ts`).
+The body/heading font is **Space Grotesk** (`src/theme/fonts.ts`).
 Swap it by changing that file and the `@fontsource` import in `src/index.tsx`.
 
 ---
@@ -603,7 +604,7 @@ lazy-loaded, so it stays out of the main bundle until visited.
 
 ## Add your spec
 
-1. Drop your OpenAPI document at `apps/web/public/openapi/v1.yaml`
+1. Drop your OpenAPI document at `public/openapi/v1.yaml`
    (replacing the example spec).
 2. That's it — visit `/docs/api`.
 
@@ -718,7 +719,7 @@ included `scripts/sync-openapi.mjs` copies a spec into `public/openapi/v1.yaml`
 when `OPENAPI_SOURCE` is set — wire it into your build or a CI step:
 
 ```bash
-OPENAPI_SOURCE=../api/openapi.yaml pnpm dev:web
+OPENAPI_SOURCE=../api/openapi.yaml pnpm dev
 ```
 
 A common pattern: the API repo commits its spec to this repo (or triggers a

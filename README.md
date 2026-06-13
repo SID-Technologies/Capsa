@@ -37,30 +37,30 @@ host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
 ```bash
 # Use this repo as a GitHub template, or clone it
 pnpm install
-pnpm dev:web        # http://localhost:3001
+pnpm dev        # http://localhost:3001
 ```
 
-Add a page by dropping a Markdown file under `apps/web/content/` and listing it
-in `apps/web/src/navigation.ts`. See the live docs (this repo _is_ a Capsa site):
+Add a page by dropping a Markdown file under `content/` and listing it
+in `src/navigation.ts`. See the live docs (this repo _is_ a Capsa site):
 **Getting Started → Quickstart**.
 
 ## Build
 
 ```bash
-pnpm build:web      # output → apps/web/dist
+pnpm build      # output → dist
 ```
 
 The build also emits the search index, sitemap, `llms.txt`, and per-page Markdown
-into `apps/web/public/`.
+into `public/`.
 
 ## Deploy
 
 Cloudflare Pages, with:
 
-| Setting          | Value                            |
-| ---------------- | -------------------------------- |
-| Build command    | `pnpm install && pnpm build:web` |
-| Output directory | `apps/web/dist`                  |
+| Setting          | Value                        |
+| ---------------- | ---------------------------- |
+| Build command    | `pnpm install && pnpm build` |
+| Output directory | `dist`                       |
 
 Full guide (Wrangler, custom domain, Docker self-host) is in the docs under
 **Deploy → Deploy to Cloudflare**.

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       bump:
-        description: "Version bump type"
+        description: 'Version bump type'
         required: true
         type: choice
         options:
@@ -58,7 +58,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build:web
+        run: pnpm build
         env:
           # Set per-deploy site config here (all optional).
           VITE_SITE_NAME: Capsa
@@ -84,7 +84,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/dist --project-name=capsa --branch=main
+          command: pages deploy dist --project-name=capsa --branch=main
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

@@ -5,7 +5,7 @@
 // Tolerant by design: if OPENAPI_SOURCE is unset or missing, it does nothing and
 // the committed spec is used. Wired as a `predev` hook — harmless when unused.
 //
-//   OPENAPI_SOURCE=../api/openapi.yaml pnpm dev:web
+//   OPENAPI_SOURCE=../api/openapi.yaml pnpm dev
 
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';

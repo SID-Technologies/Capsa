@@ -44,7 +44,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build:web
+        run: pnpm build
 
       - name: Check links
         run: pnpm check:links

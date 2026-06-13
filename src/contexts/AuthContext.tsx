@@ -1,5 +1,6 @@
-// Copied from Torch/apps/web/src/contexts/AuthContext.tsx
-// Same token exchange + refresh pattern against platform-core.
+// Example WorkOS auth context — cookie-based JWT session with token exchange +
+// refresh. Only mounted when auth is enabled (see lib/auth). Swap this for your
+// own provider to integrate a different identity system; see the Auth guide.
 // Simplified: no onboarding flow (docs app doesn't need it).
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';

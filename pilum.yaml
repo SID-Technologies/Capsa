@@ -19,9 +19,9 @@ cloudflare:
 
 build:
   # Pilum runs `pnpm install --frozen-lockfile` first, then this command.
-  cmd: pnpm --filter @capsa/web build
+  cmd: pnpm build
   # Path (from the repo root) that gets uploaded to Pages.
-  output_dir: apps/web/dist
+  output_dir: dist
   env_vars:
     VITE_SITE_NAME: Capsa
     # VITE_SITE_URL: https://capsa.pages.dev

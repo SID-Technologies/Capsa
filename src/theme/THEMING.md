@@ -50,12 +50,12 @@ This document explains how theming works in the Torch platform and how to create
 
 ## File Locations
 
-| File                                       | Purpose                              |
-| ------------------------------------------ | ------------------------------------ |
-| `packages/configs/src/themes.ts`           | Theme definitions (palettes, colors) |
-| `packages/configs/src/themeController.tsx` | React context for theme state        |
-| `packages/configs/src/tamagui.config.ts`   | Main Tamagui configuration           |
-| `apps/web/src/App.tsx`                     | Applies theme to app                 |
+| File                            | Purpose                              |
+| ------------------------------- | ------------------------------------ |
+| `src/theme/themes.ts`           | Theme definitions (palettes, colors) |
+| `src/theme/themeController.tsx` | React context for theme state        |
+| `src/theme/tamagui.config.ts`   | Main Tamagui configuration           |
+| `src/App.tsx`                   | Applies theme to app                 |
 
 ## How Palettes Work
 
@@ -362,7 +362,7 @@ Colors.blue.blue12; // Darkest
 
 ## Testing Themes
 
-1. Run the dev server: `pnpm dev:web`
+1. Run the dev server: `pnpm dev`
 2. Navigate to Dashboard → Account → Theme
 3. Switch between Light/Dark/System modes
 4. (Once accent themes are set up) Select different accent colors

@@ -32,11 +32,12 @@ edit.
 ## How it's organized
 
 ```
-apps/web/
+capsa/
 ├── content/        # your docs — Markdown/MDX files map to routes
 │   └── guides/intro.mdx  →  /docs/guides/intro
 ├── src/            # the Capsa app (components, layout, hooks)
-│   └── navigation.ts     # the sidebar + section tabs
+│   ├── navigation.ts     # the sidebar + section tabs
+│   └── theme/            # themes + Tamagui config
 └── public/openapi/ # your OpenAPI spec(s) for the API reference
 ```
 

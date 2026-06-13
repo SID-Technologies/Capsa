@@ -21,7 +21,7 @@ All are optional. A bare deploy needs none of them.
 
 ## Theming
 
-Five styles ship in `packages/configs/src/themes.ts`, each with light + dark:
+Five styles ship in `src/theme/themes.ts`, each with light + dark:
 `default`, `aurora`, `steel`, `retro`, `shadcn`. Users switch via the gear menu;
 pin one with `VITE_DEFAULT_THEME_STYLE` to lock branding for a public site.
 

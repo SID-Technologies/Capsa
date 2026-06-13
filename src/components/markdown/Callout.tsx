@@ -4,7 +4,7 @@ import { IconInfoCircle, IconBulb, IconAlertTriangle, IconFlame } from '@tabler/
 
 // Admonition block rendered from :::note / :::tip / :::warning / :::danger.
 // Colors come from the theme's existing semantic tokens (info/success/
-// warning/error families in packages/configs/themes.ts) so callouts re-theme
+// warning/error families in src/theme/themes.ts) so callouts re-theme
 // automatically per product and in light/dark.
 
 type Kind = 'note' | 'info' | 'tip' | 'warning' | 'danger';
