@@ -2,7 +2,7 @@
 
 **A self-hosted documentation platform. Fast as in Vite, free as in libre.**
 
-[![CI](https://github.com/your-org/capsa/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/capsa/actions/workflows/ci.yml)
+[![CI](https://github.com/SID-Technologies/Capsa/actions/workflows/ci.yml/badge.svg)](https://github.com/SID-Technologies/Capsa/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 [![Made with Vite](https://img.shields.io/badge/Vite-React_19-646cff.svg)](https://vitejs.dev)
 
@@ -10,13 +10,13 @@ Capsa renders MDX into a polished docs site — command palette, OpenAPI referen
 theming, AI-friendly exports — and deploys to Cloudflare Pages (or any static
 host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
 
-**[Live demo](https://your-demo.example.com)** · **[Documentation](https://your-demo.example.com/docs)**
+**[Live demo](https://capsa.pages.dev)** · **[Documentation](https://capsa.pages.dev/docs)**
 
 <!-- TODO: add a screenshot or GIF of the docs (palette open + a themed page) here. -->
 <!-- ![Capsa](./docs/screenshot.png) -->
 
-> Replace the `your-org` / `your-demo` placeholders above (and the badge URLs)
-> with your repo and deployment once it's live.
+> Using Capsa for your own docs? Point the badges, demo link, and `VITE_GITHUB_URL`
+> at your repo and deployment.
 
 > A _capsa_ was the cylindrical case a Roman carried their scrolls in. This one
 > holds yours.

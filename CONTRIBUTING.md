@@ -8,7 +8,7 @@ the contribution flow.
 Requires **Node 20+** and **pnpm** (`npm i -g pnpm`).
 
 ```bash
-git clone https://github.com/your-org/capsa.git
+git clone https://github.com/SID-Technologies/Capsa.git
 cd capsa
 pnpm install
 pnpm dev      # http://localhost:3001

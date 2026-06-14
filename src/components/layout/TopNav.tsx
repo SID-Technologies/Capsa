@@ -8,6 +8,7 @@ import {
   IconLogout,
   IconSettings,
   IconMenu2,
+  IconBrandGithub,
 } from '@tabler/icons-react';
 import { useThemeController } from '@/theme/themeController';
 import type { ThemeMode, ThemeStyle } from '@/theme/themeController';
@@ -17,6 +18,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { NavTab } from '../../navigation';
 import { NavIcon } from '../../lib/navIcons';
 import { SITE_NAME } from '../../lib/site';
+import { IS_PUBLIC } from '../../lib/auth';
+
+// Repo link for the top-bar GitHub icon — shown only when configured.
+const GITHUB_URL = import.meta.env.VITE_GITHUB_URL as string | undefined;
 
 const modeOptions: { value: ThemeMode; label: string; Icon: typeof IconSun }[] = [
   { value: 'light', label: 'Light', Icon: IconSun },
@@ -105,6 +110,17 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
 
       {/* Right controls */}
       <XStack marginLeft="auto" alignItems="center" gap="$2">
+        {GITHUB_URL && (
+          <Button
+            size="$2"
+            circular
+            chromeless
+            onPress={() => window.open(GITHUB_URL, '_blank', 'noopener,noreferrer')}
+            icon={<IconBrandGithub size={16} />}
+            aria-label="View source on GitHub"
+          />
+        )}
+
         <Button
           size="$2"
           circular
@@ -205,7 +221,9 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
           </Popover.Content>
         </Popover>
 
-        <Button size="$2" circular chromeless onPress={logout} icon={<IconLogout size={16} />} />
+        {!IS_PUBLIC && (
+          <Button size="$2" circular chromeless onPress={logout} icon={<IconLogout size={16} />} />
+        )}
       </XStack>
     </XStack>
   );
