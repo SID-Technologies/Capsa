@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import type { FC, ReactNode, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconSearch, IconCornerDownLeft } from '@tabler/icons-react';
+import { MagnifyingGlass, ArrowElbowDownLeft } from '@phosphor-icons/react';
 
 import { useDocSearch } from '../../hooks/useDocs';
 
@@ -66,7 +66,7 @@ const Palette: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) 
     <div className="sid-cmdk-overlay" onClick={onClose}>
       <div className="sid-cmdk-panel" onClick={(e) => e.stopPropagation()} onKeyDown={onKeyDown}>
         <div className="sid-cmdk-input-row">
-          <IconSearch size={17} />
+          <MagnifyingGlass size={17} />
           <input
             ref={inputRef}
             className="sid-cmdk-input"
@@ -95,7 +95,7 @@ const Palette: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) 
                 {r.headingText && <span className="sid-cmdk-item-heading">› {r.headingText}</span>}
               </div>
               <span className="sid-cmdk-item-cat">{r.category}</span>
-              {i === active && <IconCornerDownLeft size={14} className="sid-cmdk-enter" />}
+              {i === active && <ArrowElbowDownLeft size={14} className="sid-cmdk-enter" />}
             </div>
           ))}
         </div>

@@ -10,7 +10,7 @@ Capsa renders MDX into a polished docs site — command palette, OpenAPI referen
 theming, AI-friendly exports — and deploys to Cloudflare Pages (or any static
 host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
 
-**[Live demo](https://capsa.pages.dev)** · **[Documentation](https://capsa.pages.dev/docs)**
+**[Live demo](https://capsa.romans.dev)** · **[Documentation](https://capsa.romans.dev/docs)**
 
 <!-- TODO: add a screenshot or GIF of the docs (palette open + a themed page) here. -->
 <!-- ![Capsa](./docs/screenshot.png) -->

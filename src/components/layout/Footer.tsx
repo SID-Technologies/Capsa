@@ -1,16 +1,16 @@
 import { XStack, Text } from 'tamagui';
-import { IconBrandGithub, IconActivity, IconLifebuoy } from '@tabler/icons-react';
+import { GithubLogo, Pulse, Lifebuoy } from '@phosphor-icons/react';
 
-import { SITE_NAME } from '../../lib/site';
+import { SITE_NAME, GITHUB_URL } from '../../lib/site';
 
-// Docs footer. Links render only when their env var is set, so a bare deploy
-// stays clean and lights up what it has. No fake "all systems operational"
-// badge — the status link points at a real page when VITE_STATUS_URL is set.
+// Docs footer. GitHub always shows (defaults to the repo); Status/Support render
+// only when their env var is set, so a bare deploy stays clean and lights up
+// what it has. No fake "all systems operational" badge.
 const LINKS = [
-  { href: import.meta.env.VITE_GITHUB_URL, label: 'GitHub', Icon: IconBrandGithub },
-  { href: import.meta.env.VITE_STATUS_URL, label: 'Status', Icon: IconActivity },
-  { href: import.meta.env.VITE_SUPPORT_URL, label: 'Support', Icon: IconLifebuoy },
-].filter((l) => Boolean(l.href)) as { href: string; label: string; Icon: typeof IconBrandGithub }[];
+  { href: GITHUB_URL, label: 'GitHub', Icon: GithubLogo },
+  { href: import.meta.env.VITE_STATUS_URL, label: 'Status', Icon: Pulse },
+  { href: import.meta.env.VITE_SUPPORT_URL, label: 'Support', Icon: Lifebuoy },
+].filter((l) => Boolean(l.href)) as { href: string; label: string; Icon: typeof GithubLogo }[];
 
 const ORG = (import.meta.env.VITE_SITE_ORG as string | undefined) || SITE_NAME;
 

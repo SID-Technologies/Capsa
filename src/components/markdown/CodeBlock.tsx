@@ -1,7 +1,7 @@
 import { Children, isValidElement, useState } from 'react';
 import type { ReactNode, ReactElement } from 'react';
 import { useTheme } from 'tamagui';
-import { IconCopy, IconCheck } from '@tabler/icons-react';
+import { Copy, Check } from '@phosphor-icons/react';
 
 // Wraps a fenced code block with chrome: a language label, an optional filename
 // (from a fence meta string like ```go title="main.go"), and a copy button that
@@ -166,7 +166,7 @@ export default function CodeBlock({
           cursor: 'pointer',
         }}
       >
-        {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+        {copied ? <Check size={14} /> : <Copy size={14} />}
       </button>
     </div>
   );

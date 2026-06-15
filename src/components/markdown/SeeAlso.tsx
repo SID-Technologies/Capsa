@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { YStack, XStack, Text } from 'tamagui';
-import { IconBookmarks } from '@tabler/icons-react';
+import { Bookmarks } from '@phosphor-icons/react';
 
 // In-content "See also" card for related-doc discovery. Authoring:
 //
@@ -24,7 +24,7 @@ export default function SeeAlso({ title = 'See also', children }: { title?: stri
       gap="$1"
     >
       <XStack alignItems="center" gap="$2" marginBottom="$1">
-        <IconBookmarks size={15} color="var(--accent)" />
+        <Bookmarks size={15} color="var(--accent)" />
         <Text fontSize={12} fontWeight="700" textTransform="uppercase" letterSpacing={0.4} color="$color11">
           {title}
         </Text>

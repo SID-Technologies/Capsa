@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { YStack, XStack, Paragraph, useTheme } from 'tamagui';
-import { IconInfoCircle, IconBulb, IconAlertTriangle, IconFlame } from '@tabler/icons-react';
+import { Info, Lightbulb, Warning, Flame } from '@phosphor-icons/react';
 
 // Admonition block rendered from :::note / :::tip / :::warning / :::danger.
 // Colors come from the theme's existing semantic tokens (info/success/
@@ -13,7 +13,7 @@ const CONFIG: Record<
   Kind,
   {
     label: string;
-    Icon: typeof IconInfoCircle;
+    Icon: typeof Info;
     accent: string;
     bg: string;
     fg: string;
@@ -22,7 +22,7 @@ const CONFIG: Record<
 > = {
   note: {
     label: 'Note',
-    Icon: IconInfoCircle,
+    Icon: Info,
     accent: '$info',
     bg: '$infoLight',
     fg: '$infoLightForeground',
@@ -30,7 +30,7 @@ const CONFIG: Record<
   },
   info: {
     label: 'Info',
-    Icon: IconInfoCircle,
+    Icon: Info,
     accent: '$info',
     bg: '$infoLight',
     fg: '$infoLightForeground',
@@ -38,7 +38,7 @@ const CONFIG: Record<
   },
   tip: {
     label: 'Tip',
-    Icon: IconBulb,
+    Icon: Lightbulb,
     accent: '$success',
     bg: '$successLight',
     fg: '$successLightForeground',
@@ -46,7 +46,7 @@ const CONFIG: Record<
   },
   warning: {
     label: 'Warning',
-    Icon: IconAlertTriangle,
+    Icon: Warning,
     accent: '$warning',
     bg: '$warningLight',
     fg: '$warningLightForeground',
@@ -54,7 +54,7 @@ const CONFIG: Record<
   },
   danger: {
     label: 'Danger',
-    Icon: IconFlame,
+    Icon: Flame,
     accent: '$error',
     bg: '$errorLight',
     fg: '$errorLightForeground',

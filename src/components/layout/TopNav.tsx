@@ -1,15 +1,7 @@
 import { useState } from 'react';
 import type { FC } from 'react';
 import { XStack, YStack, Paragraph, Button, Text, Separator, Popover } from 'tamagui';
-import {
-  IconSun,
-  IconMoon,
-  IconDeviceDesktop,
-  IconLogout,
-  IconSettings,
-  IconMenu2,
-  IconBrandGithub,
-} from '@tabler/icons-react';
+import { Sun, Moon, Desktop, SignOut, Gear, List, GithubLogo } from '@phosphor-icons/react';
 import { useThemeController } from '@/theme/themeController';
 import type { ThemeMode, ThemeStyle } from '@/theme/themeController';
 import { PINNED_THEME_STYLE } from '@/theme/themeController';
@@ -17,16 +9,13 @@ import { PINNED_THEME_STYLE } from '@/theme/themeController';
 import { useAuth } from '../../contexts/AuthContext';
 import type { NavTab } from '../../navigation';
 import { NavIcon } from '../../lib/navIcons';
-import { SITE_NAME } from '../../lib/site';
+import { SITE_NAME, GITHUB_URL } from '../../lib/site';
 import { IS_PUBLIC } from '../../lib/auth';
 
-// Repo link for the top-bar GitHub icon — shown only when configured.
-const GITHUB_URL = import.meta.env.VITE_GITHUB_URL as string | undefined;
-
-const modeOptions: { value: ThemeMode; label: string; Icon: typeof IconSun }[] = [
-  { value: 'light', label: 'Light', Icon: IconSun },
-  { value: 'dark', label: 'Dark', Icon: IconMoon },
-  { value: 'system', label: 'System', Icon: IconDeviceDesktop },
+const modeOptions: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
+  { value: 'light', label: 'Light', Icon: Sun },
+  { value: 'dark', label: 'Dark', Icon: Moon },
+  { value: 'system', label: 'System', Icon: Desktop },
 ];
 
 const styleOptions: ThemeStyle[] = ['default', 'aurora', 'retro', 'shadcn', 'steel'];
@@ -66,7 +55,7 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
           display="flex"
           $md={{ display: 'none' }}
           onPress={onMenuPress}
-          icon={<IconMenu2 size={18} />}
+          icon={<List size={18} />}
           aria-label="Open navigation"
         />
       )}
@@ -116,7 +105,7 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
             circular
             chromeless
             onPress={() => window.open(GITHUB_URL, '_blank', 'noopener,noreferrer')}
-            icon={<IconBrandGithub size={16} />}
+            icon={<GithubLogo size={16} />}
             aria-label="View source on GitHub"
           />
         )}
@@ -126,12 +115,12 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
           circular
           chromeless
           onPress={toggleTheme}
-          icon={isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
+          icon={isDark ? <Sun size={16} /> : <Moon size={16} />}
         />
 
         <Popover open={settingsOpen} onOpenChange={setSettingsOpen} placement="bottom-end" offset={4}>
           <Popover.Trigger asChild>
-            <Button size="$2" circular chromeless icon={<IconSettings size={16} />} />
+            <Button size="$2" circular chromeless icon={<Gear size={16} />} />
           </Popover.Trigger>
 
           <Popover.Content
@@ -221,9 +210,7 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
           </Popover.Content>
         </Popover>
 
-        {!IS_PUBLIC && (
-          <Button size="$2" circular chromeless onPress={logout} icon={<IconLogout size={16} />} />
-        )}
+        {!IS_PUBLIC && <Button size="$2" circular chromeless onPress={logout} icon={<SignOut size={16} />} />}
       </XStack>
     </XStack>
   );

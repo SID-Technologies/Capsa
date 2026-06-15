@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  IconCopy,
-  IconCheck,
-  IconChevronDown,
-  IconMarkdown,
-  IconBrandOpenai,
-  IconSparkles,
-} from '@tabler/icons-react';
+import { Copy, Check, CaretDown, MarkdownLogo, OpenAiLogo, Sparkle } from '@phosphor-icons/react';
 
 import { track } from '../../lib/analytics';
 
@@ -49,7 +42,7 @@ export default function PageActions({ slug }: { slug: string }) {
   return (
     <div className="sid-pageactions" ref={ref}>
       <button type="button" className="sid-pageactions-btn sid-pageactions-main" onClick={copyPage}>
-        {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+        {copied ? <Check size={14} /> : <Copy size={14} />}
         {copied ? 'Copied' : 'Copy page'}
       </button>
       <button
@@ -58,14 +51,14 @@ export default function PageActions({ slug }: { slug: string }) {
         aria-label="More actions"
         onClick={() => setOpen((o) => !o)}
       >
-        <IconChevronDown size={14} />
+        <CaretDown size={14} />
       </button>
 
       {open && (
         <div className="sid-pageactions-menu" role="menu">
           <button type="button" className="sid-pageactions-item" onClick={copyPage}>
             <span>
-              <IconCopy size={15} />
+              <Copy size={15} />
             </span>{' '}
             Copy page as Markdown
           </button>
@@ -77,7 +70,7 @@ export default function PageActions({ slug }: { slug: string }) {
             onClick={() => setOpen(false)}
           >
             <span>
-              <IconMarkdown size={15} />
+              <MarkdownLogo size={15} />
             </span>{' '}
             View as Markdown
           </a>
@@ -92,7 +85,7 @@ export default function PageActions({ slug }: { slug: string }) {
             }}
           >
             <span>
-              <IconBrandOpenai size={15} />
+              <OpenAiLogo size={15} />
             </span>{' '}
             Open in ChatGPT
           </a>
@@ -107,7 +100,7 @@ export default function PageActions({ slug }: { slug: string }) {
             }}
           >
             <span>
-              <IconSparkles size={15} />
+              <Sparkle size={15} />
             </span>{' '}
             Open in Claude
           </a>

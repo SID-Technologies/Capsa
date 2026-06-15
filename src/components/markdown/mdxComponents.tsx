@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Paragraph, H1, H2, H3, H4, H5, H6, YStack, Separator, useTheme } from 'tamagui';
-import { IconLink } from '@tabler/icons-react';
+import { Link } from '@phosphor-icons/react';
 
 import CodeBlock from './CodeBlock';
 import CodeTabs from './CodeTabs';
@@ -56,7 +56,7 @@ function HeadingAnchor({ id }: { id?: string }) {
         navigator.clipboard?.writeText(url).catch(() => {});
       }}
     >
-      <IconLink size={15} />
+      <Link size={15} />
     </a>
   );
 }

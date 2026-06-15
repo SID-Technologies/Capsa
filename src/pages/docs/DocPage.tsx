@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
 import { Helmet } from 'react-helmet-async';
 import { XStack, YStack, Paragraph, Spinner, H1, Text } from 'tamagui';
-import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
+import { ArrowLeft, ArrowRight } from '@phosphor-icons/react';
 
 import { useDoc, useDocMeta } from '../../hooks/useDocs';
 import { useNavigation } from '../../hooks/useNavigation';
@@ -133,7 +133,7 @@ export default function DocPage() {
                     onPress={() => navigate(`/docs/${prev.slug}`)}
                   >
                     <XStack alignItems="center" gap="$1.5">
-                      <IconArrowLeft size={13} />
+                      <ArrowLeft size={13} />
                       <Text fontSize={11} color="$colorPress">
                         Previous
                       </Text>
@@ -162,7 +162,7 @@ export default function DocPage() {
                       <Text fontSize={11} color="$colorPress">
                         Next
                       </Text>
-                      <IconArrowRight size={13} />
+                      <ArrowRight size={13} />
                     </XStack>
                     <Text fontSize={14} fontWeight="600" color="$color12" marginTop="$1">
                       {next.title}

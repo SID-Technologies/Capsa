@@ -16,6 +16,7 @@ import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CommandPaletteProvider } from './components/layout/CommandPalette';
+import ThemeCssVars from './components/ThemeCssVars';
 import { initAnalytics } from './lib/analytics';
 import { AUTH_ENABLED } from './lib/auth';
 
@@ -35,6 +36,7 @@ function ThemedApp() {
   return (
     <TamaguiProvider config={config}>
       <Theme name={resolvedTheme}>
+        <ThemeCssVars />
         <BrowserRouter>
           {/* Auth providers mount only when configured — otherwise fully public. */}
           {AUTH_ENABLED ? (

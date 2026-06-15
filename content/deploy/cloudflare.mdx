@@ -59,7 +59,14 @@ Capsa is a single-page app, so deep links like `/docs/guides/intro` must serve
 
 Real files (`/assets/*`, `/openapi/*`, `/llms.txt`) still take precedence — only
 unmatched paths fall through to the app. Without this file, direct loads and
-refreshes of doc URLs return 404.
+refreshes of doc URLs return 404 on Pages.
+
+:::note
+This is the **Cloudflare Pages** approach. If you deploy as a **Worker** instead
+(`wrangler deploy`), drop `_redirects` and set
+`"assets": { "not_found_handling": "single-page-application" }` in `wrangler.jsonc`
+— Workers Assets rejects the `/*` redirect rule as a loop.
+:::
 
 ## Environment variables are build-time
 
