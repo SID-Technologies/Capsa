@@ -29,7 +29,7 @@ const modeOptions: { value: ThemeMode; label: string; Icon: typeof IconSun }[] =
   { value: 'system', label: 'System', Icon: IconDeviceDesktop },
 ];
 
-const styleOptions: ThemeStyle[] = ['default', 'aurora', 'retro', 'shadcn', 'steel'];
+const styleOptions: ThemeStyle[] = ['steel', 'aurora', 'retro', 'shadcn'];
 
 const SITE_TITLE = SITE_NAME;
 

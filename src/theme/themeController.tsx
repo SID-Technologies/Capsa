@@ -5,7 +5,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type FC, R
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 // Theme style options (different visual styles)
-export type ThemeStyle = 'default' | 'aurora' | 'retro' | 'shadcn' | 'steel';
+export type ThemeStyle = 'steel' | 'aurora' | 'retro' | 'shadcn';
 
 // Optional per-deploy theme pin (4.2): a public product docs site can pin its
 // brand theme via VITE_DEFAULT_THEME_STYLE and hide the style switcher.
@@ -65,7 +65,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType>({
   themeMode: 'light',
-  themeStyle: 'default',
+  themeStyle: 'steel',
   accentColor: 'blue',
   resolvedTheme: 'light',
   isDark: false,
@@ -103,17 +103,13 @@ const resolveThemeName = (
   if (style === 'shadcn') {
     return `${baseTheme}_shadcn` as TamaguiThemeName;
   }
-  if (style === 'steel') {
-    return `${baseTheme}_steel` as TamaguiThemeName;
-  }
-
-  // Default theme
-  return baseTheme;
+  // Steel is the default style (Tamagui's bare base theme is not used).
+  return `${baseTheme}_steel` as TamaguiThemeName;
 };
 
 export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [themeMode, setThemeModeState] = useState<ThemeMode>('light');
-  const [themeStyle, setThemeStyleState] = useState<ThemeStyle>(PINNED_THEME_STYLE ?? 'default');
+  const [themeStyle, setThemeStyleState] = useState<ThemeStyle>(PINNED_THEME_STYLE ?? 'steel');
   const [accentColor, setAccentColorState] = useState<AccentColor>('blue');
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme);
   const [isTransitioning, setIsTransitioning] = useState(false);
