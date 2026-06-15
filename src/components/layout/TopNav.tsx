@@ -18,7 +18,7 @@ const modeOptions: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
   { value: 'system', label: 'System', Icon: Desktop },
 ];
 
-const styleOptions: ThemeStyle[] = ['default', 'aurora', 'retro', 'shadcn', 'steel'];
+const styleOptions: ThemeStyle[] = ['steel', 'aurora', 'retro', 'shadcn'];
 
 const SITE_TITLE = SITE_NAME;
 
