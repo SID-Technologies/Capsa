@@ -24,7 +24,7 @@
     "@mdx-js/react": "3.1.1",
     "@mdx-js/rollup": "3.1.1",
     "@phosphor-icons/react": "^2.1.10",
-    "@scalar/api-reference-react": "0.9.43",
+    "@scalar/api-reference-react": "0.9.46",
     "@tamagui/colors": "^1.135.2",
     "@tamagui/core": "^1.135.2",
     "@workos-inc/authkit-react": "^0.10.0",
