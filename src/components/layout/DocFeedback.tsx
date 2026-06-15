@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { YStack, XStack, Text, Button, TextArea } from 'tamagui';
-import { IconThumbUp, IconThumbDown, IconCheck } from '@tabler/icons-react';
+import { ThumbsUp, ThumbsDown, Check } from '@phosphor-icons/react';
 
 import { track } from '../../lib/analytics';
 
@@ -33,7 +33,7 @@ export default function DocFeedback({ slug }: { slug: string }) {
         alignItems="center"
         gap="$2"
       >
-        <IconCheck size={16} color="var(--green10)" />
+        <Check size={16} color="var(--green10)" />
         <Text fontSize={13} color="$color10">
           Thanks for the feedback.
         </Text>
@@ -54,7 +54,7 @@ export default function DocFeedback({ slug }: { slug: string }) {
             borderWidth={1}
             borderColor={choice === 'up' ? '$accent' : '$borderColor'}
             backgroundColor={choice === 'up' ? '$accentLight' : 'transparent'}
-            icon={<IconThumbUp size={15} />}
+            icon={<ThumbsUp size={15} />}
             onPress={() => vote(true)}
             aria-label="Yes, helpful"
           />
@@ -64,7 +64,7 @@ export default function DocFeedback({ slug }: { slug: string }) {
             borderWidth={1}
             borderColor={choice === 'down' ? '$accent' : '$borderColor'}
             backgroundColor={choice === 'down' ? '$accentLight' : 'transparent'}
-            icon={<IconThumbDown size={15} />}
+            icon={<ThumbsDown size={15} />}
             onPress={() => vote(false)}
             aria-label="No, not helpful"
           />

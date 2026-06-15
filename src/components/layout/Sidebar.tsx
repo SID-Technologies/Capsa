@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FC } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { YStack, XStack, ScrollView, Text } from 'tamagui';
-import { IconSearch, IconChevronRight } from '@tabler/icons-react';
+import { MagnifyingGlass, CaretRight } from '@phosphor-icons/react';
 
 import type { ResolvedGroup, ResolvedItem } from '../../hooks/useNavigation';
 import { NavIcon } from '../../lib/navIcons';
@@ -105,7 +105,7 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
             </Text>
           )}
           <XStack rotate={isCollapsed ? '0deg' : '90deg'} opacity={0.5}>
-            <IconChevronRight size={13} />
+            <CaretRight size={13} />
           </XStack>
         </XStack>
 
@@ -146,7 +146,7 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
           hoverStyle={{ borderColor: '$accentBorder' }}
           onPress={openPalette}
         >
-          <IconSearch size={15} color="var(--colorPress)" />
+          <MagnifyingGlass size={15} color="var(--colorPress)" />
           <Text flex={1} fontSize={13.5} color="$colorPress">
             Search docs…
           </Text>
