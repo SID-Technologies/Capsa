@@ -50,26 +50,22 @@ absolute URLs.
 ## SPA routing
 
 Capsa is a single-page app, so deep links like `/docs/guides/intro` must serve
-`index.html` and let the client router take over. This repo ships a
-`wrangler.jsonc` that configures exactly that:
+`index.html` and let the client router take over. This repo ships
+`public/_redirects`:
 
-```jsonc title="wrangler.jsonc"
-{
-  "name": "capsa",
-  "compatibility_date": "2026-06-15",
-  "assets": {
-    "not_found_handling": "single-page-application"
-  }
-}
+```text title="public/_redirects"
+/*    /index.html   200
 ```
 
 Real files (`/assets/*`, `/openapi/*`, `/llms.txt`) still take precedence — only
-unmatched paths fall through to the app.
+unmatched paths fall through to the app. Without this file, direct loads and
+refreshes of doc URLs return 404 on Pages.
 
-:::warning
-Don't add a `_redirects` file with `/* /index.html 200` — Cloudflare's Workers
-Assets handles SPA fallback via `not_found_handling` above, and the catch-all
-rule is rejected as a redirect loop.
+:::note
+This is the **Cloudflare Pages** approach. If you deploy as a **Worker** instead
+(`wrangler deploy`), drop `_redirects` and set
+`"assets": { "not_found_handling": "single-page-application" }` in `wrangler.jsonc`
+— Workers Assets rejects the `/*` redirect rule as a loop.
 :::
 
 ## Environment variables are build-time

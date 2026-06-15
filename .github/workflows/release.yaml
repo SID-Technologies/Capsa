@@ -62,7 +62,7 @@ jobs:
         env:
           # Per-deploy site config (all optional).
           VITE_SITE_NAME: Capsa
-          VITE_SITE_URL: https://capsa.pages.dev
+          VITE_SITE_URL: https://capsa.romans.dev
           VITE_GITHUB_URL: https://github.com/SID-Technologies/Capsa
 
       - name: Create and push tag
