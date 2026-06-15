@@ -1,5 +1,0 @@
-# Cloudflare Pages SPA fallback: serve index.html (200, a rewrite — not a 302)
-# for any path that isn't a real static asset, so client-side routes like
-# /docs/guides/intro work on direct load and refresh. Real files (/assets/*,
-# /openapi/*, /llms.txt, ...) still take precedence and serve directly.
-/*    /index.html   200
