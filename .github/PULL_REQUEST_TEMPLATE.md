@@ -14,7 +14,7 @@
 - [ ] `pnpm typecheck` passes
 - [ ] `pnpm lint` passes
 - [ ] `pnpm format:check` passes (run `pnpm format` to fix)
-- [ ] `pnpm build:web` succeeds
+- [ ] `pnpm build` succeeds
 - [ ] `pnpm check:links` passes
 - [ ] Docs/examples updated if behavior changed
 

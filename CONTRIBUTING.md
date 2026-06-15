@@ -8,25 +8,25 @@ the contribution flow.
 Requires **Node 20+** and **pnpm** (`npm i -g pnpm`).
 
 ```bash
-git clone https://github.com/your-org/capsa.git
+git clone https://github.com/SID-Technologies/Capsa.git
 cd capsa
 pnpm install
-pnpm dev:web      # http://localhost:3001
+pnpm dev      # http://localhost:3001
 ```
 
-Capsa is a pnpm monorepo:
+Capsa is a single Vite + React + Tamagui app:
 
-- `apps/web` — the docs app (Vite + React + Tamagui).
-- `apps/web/content` — example documentation (Markdown/MDX).
-- `packages/configs` — the Tamagui config + theme presets.
-- `apps/web/vite-plugins` — the build-time search-index / sitemap / llms.txt plugin.
+- `src/` — the app (components, layout, hooks, pages).
+- `src/theme/` — Tamagui config + theme presets.
+- `content/` — example documentation (Markdown/MDX).
+- `vite-plugins/` — the build-time search-index / sitemap / llms.txt plugin.
 
 ## Scripts
 
 | Command                             | What it does                |
 | ----------------------------------- | --------------------------- |
-| `pnpm dev:web`                      | Start the dev server        |
-| `pnpm build:web`                    | Production build            |
+| `pnpm dev`                          | Start the dev server        |
+| `pnpm build`                        | Production build            |
 | `pnpm typecheck`                    | TypeScript, no emit         |
 | `pnpm lint` / `pnpm lint:fix`       | ESLint                      |
 | `pnpm format` / `pnpm format:check` | Prettier                    |
@@ -37,7 +37,7 @@ Capsa is a pnpm monorepo:
 Run the same checks CI runs:
 
 ```bash
-pnpm typecheck && pnpm lint && pnpm format:check && pnpm build:web && pnpm check:links
+pnpm typecheck && pnpm lint && pnpm format:check && pnpm build && pnpm check:links
 ```
 
 (`pnpm format` will auto-fix formatting.)

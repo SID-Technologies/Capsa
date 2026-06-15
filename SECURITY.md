@@ -5,8 +5,7 @@
 Please **do not** open a public issue for security vulnerabilities.
 
 Instead, report privately via GitHub's [Security Advisories](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability)
-("Report a vulnerability" on the repository's **Security** tab), or email the
-maintainers at **security@example.com**.
+— click **"Report a vulnerability"** on the repository's **Security** tab.
 
 Include the affected version, a description, and steps to reproduce. We'll
 acknowledge within a few business days and keep you updated on the fix.

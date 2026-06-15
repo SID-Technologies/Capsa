@@ -1,0 +1,24 @@
+# Capsa
+
+> Developer documentation. 9 pages.
+
+## Deploy
+
+- [Deploy to Cloudflare](/docs/deploy/cloudflare): Publish your Capsa docs to Cloudflare Pages — free, global, and fast.
+
+## Getting Started
+
+- [Introduction](/docs/getting-started/introduction): Capsa is a self-hosted documentation platform — fast as in Vite, free as in libre.
+- [Quickstart](/docs/getting-started/quickstart): Clone, install, run, and publish your first page in a few minutes.
+
+## Configuration
+
+- [Navigation](/docs/configuration/navigation): Control the sidebar and top section tabs with a single declarative config.
+- [Configuration](/docs/configuration/configuration): Environment variables, theming, the API reference, and analytics.
+
+## Guides
+
+- [Writing Content](/docs/guides/writing-content): Frontmatter, Markdown, and the MDX components Capsa ships — callouts, code tabs, API badges, and more.
+- [Theming](/docs/guides/theming): Use a built-in theme, pin one for your brand, or add your own.
+- [Authentication](/docs/guides/authentication): Capsa is public by default. Gate the docs behind a login when you need to.
+- [API Reference](/docs/guides/api-reference): Render an interactive API explorer from your OpenAPI spec.

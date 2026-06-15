@@ -11,7 +11,7 @@ import { execFileSync } from 'node:child_process';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..');
-const contentDir = resolve(repoRoot, 'apps/web/content');
+const contentDir = resolve(repoRoot, 'content');
 const months = Number(process.env.STALE_MONTHS || 9);
 const cutoff = Date.now() - months * 30 * 24 * 60 * 60 * 1000;
 

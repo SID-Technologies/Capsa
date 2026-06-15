@@ -1,0 +1,28 @@
+# Capsa docs — Cloudflare Pages deployment via Pilum (https://pilum.dev)
+#
+# Deploy:  pilum deploy -t latest capsa     (production)
+#          pilum deploy -t <branch> capsa   (preview)
+#
+# `name` is used as the Cloudflare Pages project name.
+name: capsa
+type: cloudflare-pages
+provider: cloudflare
+
+cloudflare:
+  # Account ID and API token are both read from env vars at deploy time, so
+  # nothing sensitive lives in this public repo. In CI, set them from GitHub
+  # Secrets (CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN); locally, export them.
+  account_id_env: CLOUDFLARE_ACCOUNT_ID
+  token_env: CLOUDFLARE_API_TOKEN
+  production_branch: main
+  package_manager: pnpm
+
+build:
+  # Pilum runs `pnpm install --frozen-lockfile` first, then this command.
+  cmd: pnpm build
+  # Path (from the repo root) that gets uploaded to Pages.
+  output_dir: dist
+  env_vars:
+    VITE_SITE_NAME: Capsa
+    VITE_SITE_URL: https://capsa.pages.dev
+    VITE_GITHUB_URL: https://github.com/SID-Technologies/Capsa

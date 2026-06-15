@@ -5,7 +5,7 @@
 // Tolerant by design: if OPENAPI_SOURCE is unset or missing, it does nothing and
 // the committed spec is used. Wired as a `predev` hook — harmless when unused.
 //
-//   OPENAPI_SOURCE=../api/openapi.yaml pnpm dev:web
+//   OPENAPI_SOURCE=../api/openapi.yaml pnpm dev
 
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -18,7 +18,7 @@ const source = process.env.OPENAPI_SOURCE;
 if (!source) process.exit(0); // nothing configured — use the committed spec
 
 const src = resolve(source);
-const dest = resolve(repoRoot, 'apps/web/public/openapi/v1.yaml');
+const dest = resolve(repoRoot, 'public/openapi/v1.yaml');
 
 if (!existsSync(src)) {
   console.warn(`[sync-openapi] OPENAPI_SOURCE not found at ${src} — using committed spec.`);

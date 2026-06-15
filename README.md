@@ -2,7 +2,7 @@
 
 **A self-hosted documentation platform. Fast as in Vite, free as in libre.**
 
-[![CI](https://github.com/your-org/capsa/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/capsa/actions/workflows/ci.yml)
+[![CI](https://github.com/SID-Technologies/Capsa/actions/workflows/ci.yml/badge.svg)](https://github.com/SID-Technologies/Capsa/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 [![Made with Vite](https://img.shields.io/badge/Vite-React_19-646cff.svg)](https://vitejs.dev)
 
@@ -10,13 +10,13 @@ Capsa renders MDX into a polished docs site — command palette, OpenAPI referen
 theming, AI-friendly exports — and deploys to Cloudflare Pages (or any static
 host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
 
-**[Live demo](https://your-demo.example.com)** · **[Documentation](https://your-demo.example.com/docs)**
+**[Live demo](https://capsa.pages.dev)** · **[Documentation](https://capsa.pages.dev/docs)**
 
 <!-- TODO: add a screenshot or GIF of the docs (palette open + a themed page) here. -->
 <!-- ![Capsa](./docs/screenshot.png) -->
 
-> Replace the `your-org` / `your-demo` placeholders above (and the badge URLs)
-> with your repo and deployment once it's live.
+> Using Capsa for your own docs? Point the badges, demo link, and `VITE_GITHUB_URL`
+> at your repo and deployment.
 
 > A _capsa_ was the cylindrical case a Roman carried their scrolls in. This one
 > holds yours.
@@ -37,30 +37,30 @@ host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
 ```bash
 # Use this repo as a GitHub template, or clone it
 pnpm install
-pnpm dev:web        # http://localhost:3001
+pnpm dev        # http://localhost:3001
 ```
 
-Add a page by dropping a Markdown file under `apps/web/content/` and listing it
-in `apps/web/src/navigation.ts`. See the live docs (this repo _is_ a Capsa site):
+Add a page by dropping a Markdown file under `content/` and listing it
+in `src/navigation.ts`. See the live docs (this repo _is_ a Capsa site):
 **Getting Started → Quickstart**.
 
 ## Build
 
 ```bash
-pnpm build:web      # output → apps/web/dist
+pnpm build      # output → dist
 ```
 
 The build also emits the search index, sitemap, `llms.txt`, and per-page Markdown
-into `apps/web/public/`.
+into `public/`.
 
 ## Deploy
 
 Cloudflare Pages, with:
 
-| Setting          | Value                            |
-| ---------------- | -------------------------------- |
-| Build command    | `pnpm install && pnpm build:web` |
-| Output directory | `apps/web/dist`                  |
+| Setting          | Value                        |
+| ---------------- | ---------------------------- |
+| Build command    | `pnpm install && pnpm build` |
+| Output directory | `dist`                       |
 
 Full guide (Wrangler, custom domain, Docker self-host) is in the docs under
 **Deploy → Deploy to Cloudflare**.
