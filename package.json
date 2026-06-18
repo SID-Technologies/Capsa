@@ -41,7 +41,7 @@
     "remark-directive": "4.0.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
-    "tamagui": "^1.135.2",
+    "tamagui": "^2.3.0",
     "universal-cookie": "^7.2.2"
   },
   "devDependencies": {
