@@ -1,13 +1,21 @@
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
-import { join, relative, dirname, sep } from 'node:path';
+import { join, relative, dirname, resolve, sep } from 'node:path';
 import GithubSlugger from 'github-slugger';
 import matter from 'gray-matter';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 
 // Build-time docs index. Walks the content/ tree and emits two files:
 //   • search-index.json  — full records (headings + body) for in-memory search
 //   • docs-manifest.json — slim records for nav, SEO meta, and the sitemap
 // Both are kept fresh on content edits during dev.
+//
+// It also owns the static HTML head: __CAPSA_*__ placeholders in index.html
+// are filled from VITE_SITE_* env vars (dev + build), and on build every doc
+// route gets its own dist/docs/<slug>/index.html with the page's real title,
+// description, and OpenGraph tags. Link-preview bots don't execute JS, so
+// per-route head tags are what make shared docs links unfurl correctly —
+// static hosts (Cloudflare Pages, nginx) serve the per-route file when
+// present and fall back to the SPA index.html otherwise.
 //
 // Frontmatter (gray-matter) supplies optional title/description/order/hidden/
 // product. Heading ids use github-slugger — the same lib rehype-slug uses — so
@@ -236,14 +244,80 @@ function generate(opts: Options): number {
   return visible.length;
 }
 
+const escapeHtml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// Rewrite the SPA shell's head for one doc page: title, description, OG tags,
+// plus canonical/og:url when the deploy has a public base URL.
+function pageHtml(shell: string, entry: ManifestEntry, siteName: string, siteUrl?: string): string {
+  const title = escapeHtml(`${entry.title} — ${siteName}`);
+  const desc = escapeHtml(entry.description || `${entry.title} — ${siteName} documentation.`);
+  let html = shell
+    .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*(")/, `$1${desc}$2`)
+    .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${escapeHtml(entry.title)}$2`)
+    .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${desc}$2`)
+    .replace(/(<meta property="og:type" content=")[^"]*(")/, '$1article$2');
+  if (siteUrl) {
+    const url = `${siteUrl.replace(/\/$/, '')}/docs/${entry.slug}`;
+    html = html.replace(
+      '</head>',
+      `  <link rel="canonical" href="${url}" />\n    <meta property="og:url" content="${url}" />\n  </head>`,
+    );
+  }
+  return html;
+}
+
 export function searchIndexPlugin(options: Options): Plugin {
   const isContentFile = (p: string) => p.startsWith(options.contentDir + sep) && /\.mdx?$/.test(p);
+  let resolved: ResolvedConfig | undefined;
 
   return {
     name: 'capsa-search-index',
+    configResolved(config) {
+      resolved = config;
+    },
     buildStart() {
       const n = generate(options);
       this.info?.(`search-index: indexed ${n} docs`);
+    },
+    // Fill the __CAPSA_*__ head placeholders from env (dev and build alike).
+    transformIndexHtml(html) {
+      const env = resolved?.env ?? {};
+      const siteName = env.VITE_SITE_NAME || options.siteTitle || 'Capsa';
+      const description =
+        env.VITE_SITE_DESCRIPTION || `${siteName} documentation — guides and API reference.`;
+      return html
+        .replaceAll('__CAPSA_SITE_NAME__', escapeHtml(siteName))
+        .replaceAll('__CAPSA_SITE_DESCRIPTION__', escapeHtml(description))
+        .replaceAll('__CAPSA_PINNED_THEME__', env.VITE_DEFAULT_THEME_STYLE || '');
+    },
+    // After the bundle is on disk, stamp out one HTML file per doc route so
+    // link unfurls and search snippets see real per-page metadata.
+    closeBundle() {
+      if (!resolved || resolved.command !== 'build') return;
+      const outDir = resolve(resolved.root, resolved.build.outDir);
+      let shell: string;
+      try {
+        shell = readFileSync(join(outDir, 'index.html'), 'utf-8');
+      } catch {
+        return; // no client HTML emitted (e.g. non-client build)
+      }
+      const env = resolved.env ?? {};
+      const siteName = env.VITE_SITE_NAME || options.siteTitle || 'Capsa';
+      const siteUrl = options.siteUrl || env.VITE_SITE_URL;
+      const manifest: ManifestEntry[] = JSON.parse(readFileSync(options.manifestFile, 'utf-8'));
+      for (const entry of manifest) {
+        const html = pageHtml(shell, entry, siteName, siteUrl);
+        // Emit both directory-index and flat-file forms: static hosts resolve
+        // the extensionless /docs/<slug> as either <slug>/index.html (nginx,
+        // Cloudflare) or <slug>.html (sirv/vite preview, some CDNs).
+        const dirDest = join(outDir, 'docs', entry.slug, 'index.html');
+        mkdirSync(dirname(dirDest), { recursive: true });
+        writeFileSync(dirDest, html, 'utf-8');
+        writeFileSync(join(outDir, 'docs', `${entry.slug}.html`), html, 'utf-8');
+      }
+      this.info?.(`search-index: emitted ${manifest.length} per-route HTML pages`);
     },
     configureServer(server) {
       const regen = (p: string) => {

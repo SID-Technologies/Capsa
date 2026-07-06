@@ -1,16 +1,19 @@
-import '@fontsource/space-grotesk';
+// Load the real weight files — the bare '@fontsource/space-grotesk' import is
+// weight 400 only, which makes every heading a browser-synthesized faux bold.
+// Space Grotesk ships 300–700; anything heavier would be synthesized again.
+import '@fontsource/space-grotesk/400.css';
+import '@fontsource/space-grotesk/500.css';
+import '@fontsource/space-grotesk/600.css';
+import '@fontsource/space-grotesk/700.css';
 import { createFont } from 'tamagui';
 
 export const spaceGroteskFont = createFont({
   family: 'Space Grotesk',
   face: {
-    300: { normal: 'Space Grotesk' },
     400: { normal: 'Space Grotesk' },
     500: { normal: 'Space Grotesk' },
     600: { normal: 'Space Grotesk' },
     700: { normal: 'Space Grotesk' },
-    800: { normal: 'Space Grotesk' },
-    900: { normal: 'Space Grotesk' },
   },
   size: {
     1: 10,
@@ -60,14 +63,16 @@ export const spaceGroteskFont = createFont({
     15: 124,
     16: 150,
   },
+  // Clamped to the weights Space Grotesk actually ships (400–700) — heavier
+  // values would render as synthesized faux bold.
   weight: {
-    1: '300',
+    1: '400',
     2: '400',
     3: '500',
     4: '600',
     5: '700',
-    6: '800',
-    7: '900',
+    6: '700',
+    7: '700',
   },
   letterSpacing: {
     1: 0,

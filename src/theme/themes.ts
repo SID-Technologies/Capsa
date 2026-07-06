@@ -1688,31 +1688,6 @@ const generatedThemes = createThemes({
   },
 
   childrenThemes: {
-    blue: {
-      palette: {
-        dark: Object.values(Colors.blueDark),
-        light: Object.values(Colors.blue),
-      },
-    },
-    red: {
-      palette: {
-        dark: Object.values(Colors.redDark),
-        light: Object.values(Colors.red),
-      },
-    },
-    yellow: {
-      palette: {
-        dark: Object.values(Colors.yellowDark),
-        light: Object.values(Colors.yellow),
-      },
-    },
-    green: {
-      palette: {
-        dark: Object.values(Colors.greenDark),
-        light: Object.values(Colors.green),
-      },
-    },
-
     // ==========================================================================
     // AURORA THEME - purple accent
     // ==========================================================================
@@ -1878,11 +1853,33 @@ const generatedThemes = createThemes({
 
 export type TamaguiThemes = typeof generatedThemes;
 
+// createThemes silently DROPS `extra` on childrenThemes — its normalizeSubThemes
+// keeps only { palette, template } (see @tamagui/theme-builder createThemes.cjs),
+// so none of the per-style semantic tokens above ever reach the built themes;
+// child themes fall back to the base light/dark values at runtime. Merge them
+// in ourselves so each style theme actually carries its own accent, sidebar,
+// status, radius, and shadow tokens — in both JS and the generated CSS.
+const styleExtras: Record<string, Record<string, string | number>> = {
+  light_aurora: auroraSemanticColorsLight,
+  dark_aurora: auroraSemanticColorsDark,
+  light_steel: steelSemanticColorsLight,
+  dark_steel: steelSemanticColorsDark,
+  light_retro: retroSemanticColorsLight,
+  dark_retro: retroSemanticColorsDark,
+  light_shadcn: shadcnSemanticColorsLight,
+  dark_shadcn: shadcnSemanticColorsDark,
+};
+
 /**
  * Always include themes in the bundle.
  * The SSR optimization (empty themes on client) doesn't apply to SPAs.
  */
-export const themes: TamaguiThemes = generatedThemes as any;
+export const themes: TamaguiThemes = Object.fromEntries(
+  Object.entries(generatedThemes).map(([name, theme]) => [
+    name,
+    styleExtras[name] ? { ...theme, ...styleExtras[name] } : theme,
+  ]),
+) as TamaguiThemes;
 
 // =============================================================================
 // EXPORTED CONSTANTS

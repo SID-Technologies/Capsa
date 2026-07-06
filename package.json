@@ -16,10 +16,10 @@
     "format:check": "prettier --check .",
     "check:links": "node scripts/check-links.mjs",
     "check:stale": "node scripts/check-stale-docs.mjs",
-    "check": "node scripts/check-links.mjs && node scripts/check-stale-docs.mjs"
+    "check": "node scripts/check-links.mjs && node scripts/check-stale-docs.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.1.1",
     "@fontsource/space-grotesk": "^5.1.1",
     "@mdx-js/react": "3.1.1",
     "@mdx-js/rollup": "3.1.1",
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@playwright/test": "^1.61.1",
     "@tamagui/config": "^1.135.2",
     "@tamagui/vite-plugin": "^1.135.2",
     "@types/node": "^22.12.0",

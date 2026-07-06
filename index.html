@@ -5,7 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <title>Capsa</title>
+    <title>__CAPSA_SITE_NAME__</title>
+    <!-- Default social/SEO tags. The __CAPSA_*__ placeholders are filled from
+         VITE_SITE_* env vars by the search-index plugin (transformIndexHtml),
+         and per-doc pages get page-specific values in the emitted route HTML.
+         react-helmet-async updates these at runtime for client navigation. -->
+    <meta name="description" content="__CAPSA_SITE_DESCRIPTION__" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="__CAPSA_SITE_NAME__" />
+    <meta property="og:title" content="__CAPSA_SITE_NAME__" />
+    <meta property="og:description" content="__CAPSA_SITE_DESCRIPTION__" />
+    <meta name="twitter:card" content="summary" />
+    <script>
+      // Pre-hydration theme: apply the persisted (or pinned) theme classes to
+      // <html> before first paint so there is no flash of the wrong theme.
+      // Keep in sync with src/theme/themeController.tsx (storage keys, classes).
+      (function () {
+        try {
+          var styles = ['steel', 'aurora', 'retro', 'shadcn'];
+          var pinned = '__CAPSA_PINNED_THEME__';
+          var style = styles.indexOf(pinned) !== -1 ? pinned : localStorage.getItem('capsa-theme-style');
+          if (styles.indexOf(style) === -1) style = 'steel';
+          var mode = localStorage.getItem('capsa-theme-mode');
+          var dark =
+            mode === 'dark' ||
+            (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var base = dark ? 'dark' : 'light';
+          var root = document.documentElement;
+          root.classList.add('t_' + base, 't_' + base + '_' + style);
+          root.setAttribute('data-theme', base + '_' + style);
+          root.style.colorScheme = base;
+        } catch (e) {
+          /* storage blocked — render with defaults */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

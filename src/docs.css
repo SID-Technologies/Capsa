@@ -291,3 +291,16 @@
     text-decoration: none;
   }
 }
+
+/* Scalar API reference renders inside the .sid-scalar scroll container, which
+   already sits below the 56px top nav. Scalar's sticky sidebar assumes the
+   custom header shares its scroll context and offsets by
+   --refs-header-height — inside our container that double-counts the nav and
+   pushes the sidebar footer 56px past the fold. Pin it to the container top;
+   the height calc still subtracts the nav via --scalar-custom-header-height
+   (set inline in ApiReference.tsx). Scalar's own rule is
+   `.scalar-app .top-\(--refs-header-height\)` (0,2,0) in a later-loaded lazy
+   chunk — match it with higher specificity, not source order. */
+.sid-scalar .scalar-app .t-doc__sidebar {
+  top: 0;
+}

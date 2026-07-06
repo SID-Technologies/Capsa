@@ -223,4 +223,13 @@ export const config = createTamagui({
   },
 });
 
+export type AppTamaguiConfig = typeof config;
+
+// NOTE: the standard `declare module 'tamagui' { interface TamaguiCustomConfig
+// extends AppTamaguiConfig {} }` augmentation is intentionally absent. With
+// tamagui 1.135.x it corrupts component prop types (even against the untouched
+// @tamagui/config/v4 default config, basic props like `margin` stop resolving),
+// so tokens/themes fall back to Tamagui's loose default typing. Revisit after a
+// Tamagui upgrade.
+
 export default config;

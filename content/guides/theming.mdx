@@ -64,8 +64,11 @@ The fastest path is to clone an existing style and recolor it.
    },
    ```
 
-3. **Add it to the type unions** in `themeController.tsx`
-   (`ThemeStyle`, `TamaguiThemeName`) and the `resolveThemeName` switch.
+3. **Register the name** in `src/theme/themeController.tsx` — add `'brand'` to
+   the `ThemeStyle` union and the `THEME_STYLES` array (the Tamagui theme names
+   derive from those automatically) — and to the `styles` array in the
+   pre-hydration script in `index.html`, so the theme applies before first
+   paint with no flash.
 
 4. **List it** in the style switcher — `styleOptions` in
    `src/components/layout/TopNav.tsx`.
@@ -79,5 +82,7 @@ palettes. The ~50 semantic tokens mostly cascade from those.
 
 ## Fonts
 
-The body/heading font is **Space Grotesk** (`src/theme/fonts.ts`).
-Swap it by changing that file and the `@fontsource` import in `src/index.tsx`.
+The body/heading font is **Space Grotesk**, loaded and configured entirely in
+`src/theme/fonts.ts` (the `@fontsource` weight imports live there too). Swap it
+by changing that one file — import your font's weight files and update
+`createFont`.
