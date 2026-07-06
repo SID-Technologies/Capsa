@@ -148,7 +148,7 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
         >
           <MagnifyingGlass size={15} color="var(--colorPress)" />
           <Text flex={1} fontSize={13.5} color="$colorPress">
-            Search docs…
+            Search
           </Text>
           <Text
             fontSize={11}

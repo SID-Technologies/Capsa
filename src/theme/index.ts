@@ -17,12 +17,10 @@ export {
   ThemeProvider,
   useThemeController,
   useTheme,
-  useThemeRadius,
+  PINNED_THEME_STYLE,
   type ThemeMode,
   type ThemeStyle,
-  type AccentColor,
   type TamaguiThemeName,
-  type ThemeRadiusValues,
 } from './themeController';
 
 // Fonts

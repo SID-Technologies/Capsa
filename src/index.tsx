@@ -1,5 +1,4 @@
-import '@fontsource/inter';
-import '@fontsource/space-grotesk';
+// Fonts are loaded by src/theme/fonts.ts (imported via the Tamagui config).
 import './highlight.css';
 import './docs.css';
 
@@ -16,11 +15,12 @@ import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CommandPaletteProvider } from './components/layout/CommandPalette';
-import ThemeCssVars from './components/ThemeCssVars';
+import { injectThemeVariables } from '@/theme/injectThemeVars';
 import { initAnalytics } from './lib/analytics';
 import { AUTH_ENABLED } from './lib/auth';
 
 initAnalytics();
+injectThemeVariables();
 
 function ThemedApp() {
   const { resolvedTheme } = useThemeController();
@@ -36,7 +36,6 @@ function ThemedApp() {
   return (
     <TamaguiProvider config={config}>
       <Theme name={resolvedTheme}>
-        <ThemeCssVars />
         <BrowserRouter>
           {/* Auth providers mount only when configured — otherwise fully public. */}
           {AUTH_ENABLED ? (

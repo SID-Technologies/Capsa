@@ -62,7 +62,7 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
 
       {/* Brand */}
       <XStack alignItems="center" gap="$2" paddingRight="$2">
-        <Paragraph fontWeight="800" fontSize="$6" letterSpacing={-0.3}>
+        <Paragraph fontWeight="700" fontSize="$6" letterSpacing={-0.3}>
           {SITE_TITLE}
         </Paragraph>
       </XStack>

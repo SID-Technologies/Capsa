@@ -56,11 +56,12 @@ export default defineConfig({
       }),
     },
     react(),
+    // Runtime-only Tamagui: builds the config and sets up dedupe/optimizeDeps.
+    // The optimizing compiler (`optimize: true`) is deliberately off — measured
+    // no bundle/CSS win for this app, and runtime theming is what powers the
+    // multi-theme switcher.
     tamaguiPlugin({
       config: path.resolve(__dirname, './src/tamagui.config.ts'),
-      components: ['@tamagui/core'],
-      logTimings: true,
-      disableExtraction: process.env.NODE_ENV === 'development',
     }),
     tsconfigPaths(),
   ],

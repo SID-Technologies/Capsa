@@ -48,3 +48,8 @@ jobs:
 
       - name: Check links
         run: pnpm check:links
+
+      # Smoke tests against the production build (vite preview). Uses the
+      # runner's preinstalled Chrome — no browser download.
+      - name: E2E smoke tests
+        run: pnpm test:e2e

@@ -1,4 +1,8 @@
-// themeContext.tsx
+// Theme controller — React context for the mode (light/dark/system) and the
+// style (steel/aurora/retro/shadcn). State persists to localStorage and is
+// pre-applied before hydration by the inline script in index.html, so there is
+// no flash of the wrong theme on load. Keep the storage keys and class logic
+// here in sync with that script.
 import { createContext, useContext, useState, useEffect, useCallback, type FC, ReactNode } from 'react';
 
 // Base theme (light/dark)
@@ -7,42 +11,37 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 // Theme style options (different visual styles)
 export type ThemeStyle = 'steel' | 'aurora' | 'retro' | 'shadcn';
 
-// Optional per-deploy theme pin (4.2): a public product docs site can pin its
-// brand theme via VITE_DEFAULT_THEME_STYLE and hide the style switcher.
-export const PINNED_THEME_STYLE = ((): ThemeStyle | undefined => {
-  try {
-    const v = (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_DEFAULT_THEME_STYLE;
-    return v as ThemeStyle | undefined;
-  } catch {
-    return undefined;
-  }
+const THEME_STYLES: readonly ThemeStyle[] = ['steel', 'aurora', 'retro', 'shadcn'];
+const THEME_MODES: readonly ThemeMode[] = ['light', 'dark', 'system'];
+
+// localStorage keys — shared with the pre-hydration script in index.html.
+export const THEME_MODE_STORAGE_KEY = 'capsa-theme-mode';
+export const THEME_STYLE_STORAGE_KEY = 'capsa-theme-style';
+
+const isThemeStyle = (v: unknown): v is ThemeStyle => THEME_STYLES.includes(v as ThemeStyle);
+const isThemeMode = (v: unknown): v is ThemeMode => THEME_MODES.includes(v as ThemeMode);
+
+// Optional per-deploy theme pin: a public product docs site can pin its brand
+// theme via VITE_DEFAULT_THEME_STYLE and hide the style switcher. An invalid
+// value is ignored (with a warning) rather than producing a broken theme name.
+export const PINNED_THEME_STYLE: ThemeStyle | undefined = (() => {
+  const v = import.meta.env.VITE_DEFAULT_THEME_STYLE;
+  if (v === undefined || v === '') return undefined;
+  if (isThemeStyle(v)) return v;
+  console.warn(
+    `[capsa] Ignoring invalid VITE_DEFAULT_THEME_STYLE "${v}" — expected one of: ${THEME_STYLES.join(', ')}`,
+  );
+  return undefined;
 })();
 
-// Accent color options (for default theme only)
-export type AccentColor = 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'teal';
-
-// The actual Tamagui theme name
-export type TamaguiThemeName =
-  | 'light'
-  | 'dark'
-  | 'light_blue'
-  | 'dark_blue'
-  | 'light_green'
-  | 'dark_green'
-  | 'light_aurora'
-  | 'dark_aurora'
-  | 'light_retro'
-  | 'dark_retro'
-  | 'light_shadcn'
-  | 'dark_shadcn'
-  | 'light_steel'
-  | 'dark_steel';
+// The actual Tamagui theme name ("<mode>_<style>"). Tamagui's bare base
+// light/dark themes are never used directly — steel is the default style.
+export type TamaguiThemeName = `${'light' | 'dark'}_${ThemeStyle}`;
 
 interface ThemeContextType {
   // Current settings
   themeMode: ThemeMode;
   themeStyle: ThemeStyle;
-  accentColor: AccentColor;
 
   // Resolved theme name for Tamagui
   resolvedTheme: TamaguiThemeName;
@@ -56,25 +55,18 @@ interface ThemeContextType {
   // Actions
   setThemeMode: (mode: ThemeMode) => void;
   setThemeStyle: (style: ThemeStyle) => void;
-  setAccentColor: (color: AccentColor) => void;
   toggleTheme: () => void;
-
-  // Transition state
-  isTransitioning: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  themeMode: 'light',
+  themeMode: 'system',
   themeStyle: 'steel',
-  accentColor: 'blue',
-  resolvedTheme: 'light',
+  resolvedTheme: 'light_steel',
   isDark: false,
   isRetro: false,
   setThemeMode: () => {},
   setThemeStyle: () => {},
-  setAccentColor: () => {},
   toggleTheme: () => {},
-  isTransitioning: false,
 });
 
 // Helper to detect system theme preference
@@ -85,34 +77,31 @@ const getSystemTheme = (): 'light' | 'dark' => {
   return 'light';
 };
 
-// Helper to resolve theme name for Tamagui
-const resolveThemeName = (
-  mode: ThemeMode,
-  style: ThemeStyle,
-  systemTheme: 'light' | 'dark',
-): TamaguiThemeName => {
-  const baseTheme = mode === 'system' ? systemTheme : mode;
+const readStored = <T,>(key: string, guard: (v: unknown) => v is T): T | undefined => {
+  try {
+    const v = window.localStorage.getItem(key);
+    return v !== null && guard(v) ? v : undefined;
+  } catch {
+    return undefined; // storage blocked (private mode, embedded) — fall back
+  }
+};
 
-  // If using a non-default theme style, return that variant
-  if (style === 'aurora') {
-    return `${baseTheme}_aurora` as TamaguiThemeName;
+const writeStored = (key: string, value: string) => {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // non-fatal — theme simply won't persist
   }
-  if (style === 'retro') {
-    return `${baseTheme}_retro` as TamaguiThemeName;
-  }
-  if (style === 'shadcn') {
-    return `${baseTheme}_shadcn` as TamaguiThemeName;
-  }
-  // Steel is the default style (Tamagui's bare base theme is not used).
-  return `${baseTheme}_steel` as TamaguiThemeName;
 };
 
 export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [themeMode, setThemeModeState] = useState<ThemeMode>('light');
-  const [themeStyle, setThemeStyleState] = useState<ThemeStyle>(PINNED_THEME_STYLE ?? 'steel');
-  const [accentColor, setAccentColorState] = useState<AccentColor>('blue');
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(
+    () => readStored(THEME_MODE_STORAGE_KEY, isThemeMode) ?? 'system',
+  );
+  const [themeStyle, setThemeStyleState] = useState<ThemeStyle>(
+    () => PINNED_THEME_STYLE ?? readStored(THEME_STYLE_STORAGE_KEY, isThemeStyle) ?? 'steel',
+  );
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme);
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -130,45 +119,30 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
   // Resolve the actual theme
   const isDark = themeMode === 'system' ? systemTheme === 'dark' : themeMode === 'dark';
   const isRetro = themeStyle === 'retro';
-  const resolvedTheme = resolveThemeName(themeMode, themeStyle, systemTheme);
+  const resolvedTheme: TamaguiThemeName = `${isDark ? 'dark' : 'light'}_${themeStyle}`;
 
-  // Sync theme to document root for Tamagui CSS variable switching
+  // Sync theme classes to <html> so CSS variables resolve everywhere — including
+  // content portaled to <body> (Scalar modals, dropdowns), which sits outside
+  // the <Theme> wrapper. Both the base class (t_dark) and the full theme class
+  // (t_dark_steel) are applied; the full class must come last so its variables
+  // win. Mirrors the pre-hydration script in index.html.
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('t_light', 't_dark');
-    root.classList.add(isDark ? 't_dark' : 't_light');
+    const stale = Array.from(root.classList).filter((c) => c.startsWith('t_'));
+    root.classList.remove(...stale);
+    root.classList.add(isDark ? 't_dark' : 't_light', `t_${resolvedTheme}`);
     root.setAttribute('data-theme', resolvedTheme);
     root.style.colorScheme = isDark ? 'dark' : 'light';
   }, [resolvedTheme, isDark]);
 
   const setThemeMode = useCallback((mode: ThemeMode) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setThemeModeState(mode);
-    }, 0);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 300);
+    setThemeModeState(mode);
+    writeStored(THEME_MODE_STORAGE_KEY, mode);
   }, []);
 
   const setThemeStyle = useCallback((style: ThemeStyle) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setThemeStyleState(style);
-    }, 0);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 300);
-  }, []);
-
-  const setAccentColor = useCallback((color: AccentColor) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setAccentColorState(color);
-    }, 0);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 300);
+    setThemeStyleState(style);
+    writeStored(THEME_STYLE_STORAGE_KEY, style);
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -180,15 +154,12 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         themeMode,
         themeStyle,
-        accentColor,
         resolvedTheme,
         isDark,
         isRetro,
         setThemeMode,
         setThemeStyle,
-        setAccentColor,
         toggleTheme,
-        isTransitioning,
       }}
     >
       {children}
@@ -200,64 +171,3 @@ export const useThemeController = () => useContext(ThemeContext);
 
 // Legacy export for backwards compatibility
 export const useTheme = useThemeController;
-
-// =============================================================================
-// THEME-AWARE RADIUS HOOK
-// =============================================================================
-// Use this hook to get radius values that automatically adapt to the theme.
-// For retro theme, all radii are 0 (sharp corners for video game aesthetic).
-// For all other themes, standard rounded corners are used.
-
-export interface ThemeRadiusValues {
-  /** No rounding (always 0) */
-  none: number;
-  /** Small radius - badges, chips (4px or 0 for retro) */
-  sm: number;
-  /** Medium radius - inputs, buttons (6px or 0 for retro) */
-  md: number;
-  /** Large radius - cards, dialogs (8px or 0 for retro) */
-  lg: number;
-  /** Extra large radius - panels (12px or 0 for retro) */
-  xl: number;
-  /** 2XL radius - hero sections (16px or 2 for retro) */
-  '2xl': number;
-  /** 3XL radius - large decorative (24px or 2 for retro) */
-  '3xl': number;
-  /** Full/pill radius - avatars, pills (9999px or 2 for retro) */
-  full: number;
-}
-
-const defaultRadius: ThemeRadiusValues = {
-  none: 0,
-  sm: 4,
-  md: 6,
-  lg: 8,
-  xl: 12,
-  '2xl': 16,
-  '3xl': 24,
-  full: 9999,
-};
-
-const retroRadius: ThemeRadiusValues = {
-  none: 0,
-  sm: 0,
-  md: 0,
-  lg: 0,
-  xl: 0,
-  '2xl': 2,
-  '3xl': 2,
-  full: 2,
-};
-
-/**
- * Hook to get theme-aware border radius values.
- * Returns sharp corners (0) for retro theme, rounded corners for others.
- *
- * @example
- * const radius = useThemeRadius();
- * <View borderRadius={radius.md} /> // 6px normally, 0px for retro
- */
-export const useThemeRadius = (): ThemeRadiusValues => {
-  const { isRetro } = useThemeController();
-  return isRetro ? retroRadius : defaultRadius;
-};
