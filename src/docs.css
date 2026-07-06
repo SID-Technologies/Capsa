@@ -1,6 +1,14 @@
 /* Docs UI chrome that's easier in plain CSS than Tamagui inline styles:
    heading hover-anchors, table overflow fade, and print rules. */
 
+/* Antialias text app-wide. Scalar sets this on its subtree; without it the
+   rest of the app renders subpixel, which reads as a heavier font weight on
+   dark backgrounds — the same 400-weight label looks bold next to Scalar's. */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* ── Heading copy-link anchors (2.6) ───────────────────────────────────── */
 .sid-heading-anchor {
   opacity: 0;
@@ -83,6 +91,8 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 12vh;
+  /* Same entrance as Scalar's search modal: backdrop fades in… */
+  animation: 0.3s ease-in-out forwards sid-cmdk-fadein-overlay;
 }
 .sid-cmdk-panel {
   width: 100%;
@@ -96,6 +106,35 @@
   border-radius: 12px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  /* …then the panel fades up 10px, delayed 0.1s behind the backdrop. */
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  animation: 0.3s ease-in-out 0.1s forwards sid-cmdk-fadein-panel;
+}
+@keyframes sid-cmdk-fadein-overlay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes sid-cmdk-fadein-panel {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sid-cmdk-overlay,
+  .sid-cmdk-panel {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
 }
 .sid-cmdk-input-row {
   display: flex;

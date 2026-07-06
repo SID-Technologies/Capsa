@@ -38,6 +38,10 @@ export default function ApiReference() {
       --scalar-background-3: ${tok('color3')};
       --scalar-background-accent: ${tok('accentLight')};
       --scalar-border-color: ${tok('borderColor')};
+      /* Scalar defaults to 0.5px hairlines; the app uses 1px borders
+         everywhere. Normalize so the sidebar divider and card borders render
+         the same weight as the rest of the app (visible on Retina). */
+      --scalar-border-width: 1px;
 
       /* Typography — match the site (Space Grotesk body, system mono code) */
       --scalar-font: 'Space Grotesk', sans-serif;
@@ -92,19 +96,8 @@ export default function ApiReference() {
     .sid-scalar .bg-sidebar-b-search:hover {
       border-color: ${tok('accentBorder')};
     }
-    /* The ⌘K shortcut renders as a bordered chip in the app sidebar — style
-       Scalar's plain-text shortcut the same way. */
-    .sid-scalar .bg-sidebar-b-search kbd,
-    .sid-scalar .bg-sidebar-b-search .sidebar-search-shortcut {
-      background: ${tok('color2')};
-      border: 1px solid ${tok('borderColor')};
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 11px;
-      font-weight: 400;
-      line-height: normal;
-      color: ${tok('color10')};
-    }
+    /* The ⌘K shortcut chip renders natively in Scalar; the app sidebar's chip
+       (Sidebar.tsx) mimics Scalar's spec so no overrides are needed here. */
     /* Hide Scalar's "Ask AI" assistant (button + its modal entry point) —
        no config flag for it in this version. The button shares
        .bg-sidebar-b-search with the search field; .whitespace-nowrap is
