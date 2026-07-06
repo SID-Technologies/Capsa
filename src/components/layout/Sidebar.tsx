@@ -137,8 +137,8 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
           alignItems="center"
           backgroundColor="$color3"
           borderRadius="$lg"
+          height={36}
           paddingHorizontal="$3"
-          paddingVertical="$2"
           gap="$2"
           borderWidth={1}
           borderColor="$borderColor"
@@ -150,17 +150,21 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
           <Text flex={1} fontSize={13.5} color="$colorPress">
             Search
           </Text>
+          {/* Mimics Scalar's search-shortcut chip (uppercase 12/500, 4×5px
+              padding, 6px radius, transparent bg) so the two sidebars match. */}
           <Text
-            fontSize={11}
-            color="$color10"
-            backgroundColor="$color2"
+            fontSize={12}
+            fontWeight="500"
+            lineHeight={12}
+            textTransform="uppercase"
+            color="$color11"
             borderWidth={1}
             borderColor="$borderColor"
-            borderRadius="$sm"
+            borderRadius="$md"
             paddingHorizontal={5}
-            paddingVertical={1}
+            paddingVertical={4}
           >
-            {isMac ? '⌘K' : 'Ctrl K'}
+            {isMac ? '⌘ K' : 'Ctrl K'}
           </Text>
         </XStack>
       </YStack>
