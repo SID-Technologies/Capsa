@@ -71,6 +71,8 @@ test('doc routes ship real body content for no-JS crawlers', async ({ request })
   const root = html.split('<div id="root">')[1] ?? '';
   expect(root).toContain('four theme styles');
   expect(root).toContain('Quickstart'); // sidebar rendered too
+  // Nav renders as real anchors — crawlers can follow links between pages.
+  expect(root).toContain('href="/docs/getting-started/quickstart"');
 
   // Exactly one set of head tags (helmet-duplicate strip regression).
   expect(html.match(/<title>/g)).toHaveLength(1);
@@ -142,6 +144,23 @@ test('OG card images are generated per doc', async ({ request }) => {
   expect(res.headers()['content-type']).toContain('image/png');
   const index = await request.get('/assets/og/docs-index.png');
   expect(index.ok()).toBe(true);
+});
+
+test('sidebar links are anchors but navigate client-side', async ({ page }) => {
+  await page.goto('/docs/guides/theming/', { waitUntil: 'networkidle' });
+  // Mark the current document; a full page load would lose the marker.
+  await page.evaluate(() => {
+    (window as unknown as { __spaMarker?: boolean }).__spaMarker = true;
+  });
+  const link = page.locator('a.sid-nav-link[href="/docs/getting-started/quickstart"]').first();
+  await expect(link).toBeVisible();
+  await link.click();
+  await expect(page).toHaveURL(/\/docs\/getting-started\/quickstart$/);
+  await expect(page.locator('#root h1')).toContainText('Quickstart');
+  const stillSpa = await page.evaluate(
+    () => (window as unknown as { __spaMarker?: boolean }).__spaMarker === true,
+  );
+  expect(stillSpa, 'plain click must navigate client-side, not reload').toBe(true);
 });
 
 test('Scalar route stays a client-rendered shell', async ({ request }) => {

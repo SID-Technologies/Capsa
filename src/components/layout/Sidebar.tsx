@@ -6,6 +6,7 @@ import { MagnifyingGlass, CaretRight } from '@phosphor-icons/react';
 
 import type { ResolvedGroup, ResolvedItem } from '../../hooks/useNavigation';
 import { normalizeSlug } from '../../hooks/useDocs';
+import { anchorNavProps } from '../../lib/navLink';
 import { NavIcon } from '../../lib/navIcons';
 import { useCommandPalette } from './CommandPalette';
 
@@ -45,6 +46,7 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
     return (
       <XStack
         key={slug}
+        {...anchorNavProps(`/docs/${slug}`, () => go(slug))}
         alignItems="center"
         paddingVertical="$1.5"
         paddingRight="$2"
@@ -56,7 +58,6 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
         borderLeftColor={active ? '$accent' : 'transparent'}
         backgroundColor={active ? '$color4' : 'transparent'}
         hoverStyle={{ backgroundColor: active ? '$color4' : '$color3' }}
-        onPress={() => go(slug)}
       >
         <Text fontSize={13.5} fontWeight={active ? '600' : '400'} color={active ? '$color12' : '$color10'}>
           {title}

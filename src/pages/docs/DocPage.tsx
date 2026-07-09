@@ -6,6 +6,7 @@ import { XStack, YStack, Paragraph, Spinner, H1, Text } from 'tamagui';
 import { ArrowLeft, ArrowRight } from '@phosphor-icons/react';
 
 import { useDoc, useDocMeta, normalizeSlug } from '../../hooks/useDocs';
+import { anchorNavProps } from '../../lib/navLink';
 import { useNavigation } from '../../hooks/useNavigation';
 import type { TocEntry } from '../../lib/markdown';
 import mdxComponents from '../../components/markdown/mdxComponents';
@@ -129,6 +130,7 @@ export default function DocPage() {
               <XStack marginTop="$6" gap="$3" flexWrap="wrap">
                 {prev ? (
                   <YStack
+                    {...anchorNavProps(`/docs/${prev.slug}`, () => navigate(`/docs/${prev.slug}`))}
                     flex={1}
                     minWidth={200}
                     borderWidth={1}
@@ -137,7 +139,6 @@ export default function DocPage() {
                     padding="$3"
                     cursor="pointer"
                     hoverStyle={{ borderColor: '$accentBorder' }}
-                    onPress={() => navigate(`/docs/${prev.slug}`)}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <ArrowLeft size={13} />
@@ -154,6 +155,7 @@ export default function DocPage() {
                 )}
                 {next && (
                   <YStack
+                    {...anchorNavProps(`/docs/${next.slug}`, () => navigate(`/docs/${next.slug}`))}
                     flex={1}
                     minWidth={200}
                     borderWidth={1}
@@ -163,7 +165,6 @@ export default function DocPage() {
                     cursor="pointer"
                     alignItems="flex-end"
                     hoverStyle={{ borderColor: '$accentBorder' }}
-                    onPress={() => navigate(`/docs/${next.slug}`)}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <Text fontSize={11} color="$colorPress">

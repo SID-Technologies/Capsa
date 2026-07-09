@@ -6,9 +6,10 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 [![Made with Vite](https://img.shields.io/badge/Vite-React_19-646cff.svg)](https://vitejs.dev)
 
-Capsa renders MDX into a polished docs site — command palette, OpenAPI reference,
-theming, AI-friendly exports — and deploys to Cloudflare Pages (or any static
-host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
+Capsa renders MDX into a polished docs site — prerendered static HTML, command
+palette search, OpenAPI reference, theming, social cards, AI-friendly exports —
+and deploys to Cloudflare Pages (or any static host) for free. It's a Vite +
+React + Tamagui app you fully own and can edit.
 
 **[Live demo](https://capsa.romans.dev)** · **[Documentation](https://capsa.romans.dev/docs)**
 
@@ -24,13 +25,24 @@ host) for free. It's a Vite + React + Tamagui app you fully own and can edit.
 ## Features
 
 - **MDX content** — Markdown with React components when you need them.
-- **⌘K command palette** — keyboard-first search over a build-time index.
-- **OpenAPI reference** — an interactive API explorer (Scalar) from your spec.
-- **Theming** — five styles × light/dark, token-driven and brandable.
+- **Prerendered (SSG)** — every doc ships as real static HTML with the full
+  article and crawlable nav links, then hydrates into the SPA. SEO-complete
+  out of the box: titles, descriptions, OpenGraph, canonical URLs, sitemap.
+- **⌘K command palette** — keyboard-first search powered by
+  [Pagefind](https://pagefind.app) over the prerendered pages (typo-tolerant,
+  fully static, no search service), with a build-time JSON index as fallback.
+- **Social cards** — a branded 1200×630 `og:image` PNG is generated per page
+  at build time, so shared links unfurl with real previews.
+- **OpenAPI reference** — an interactive API explorer (Scalar) from your spec,
+  fully themed to match the site.
+- **Theming** — four styles × light/dark, token-driven and brandable, with
+  zero-flash persistence.
 - **AI-native** — generates `llms.txt`, per-page "Copy as Markdown", and "Open in ChatGPT/Claude".
 - **Authoring components** — callouts, tabbed code samples, API method badges, see-also cards.
 - **Multi-deploy** — env-driven, so one codebase powers many branded docs sites.
 - **Public by default** — auth is opt-in; a fresh clone runs with zero config.
+  (Auth-gated deploys automatically skip prerendering so gated content never
+  lands in static HTML.)
 
 ## Quickstart
 
@@ -47,11 +59,26 @@ in `src/navigation.ts`. See the live docs (this repo _is_ a Capsa site):
 ## Build
 
 ```bash
-pnpm build      # output → dist
+pnpm build      # SSR bundle → prerendered client build → dist
 ```
 
-The build also emits the search index, sitemap, `llms.txt`, and per-page Markdown
-into `public/`.
+One command runs the whole pipeline: an SSR bundle is built first, then the
+client build prerenders every doc route into static HTML (with per-page head
+tags, social-card PNGs, and the Pagefind search index in `dist/`). The search
+index JSON, sitemap, `llms.txt`, and per-page Markdown land in `public/`.
+
+Set `PRERENDER=0` to skip prerendering and ship the plain SPA with head-only
+per-route pages (the previous behavior — also the automatic fallback if any
+prerender step fails).
+
+## Test
+
+```bash
+pnpm test:e2e   # Playwright smoke tests against the production build
+```
+
+Covers theming, Scalar integration, prerender/hydration integrity, search,
+and social-card output. Uses your installed Chrome — no browser download.
 
 ## Deploy
 
@@ -69,19 +96,20 @@ Full guide (Wrangler, custom domain, Docker self-host) is in the docs under
 
 All optional, all env vars — a bare deploy needs none:
 
-| Variable                   | Effect                                            |
-| -------------------------- | ------------------------------------------------- |
-| `VITE_SITE_NAME`           | Brand name (default `Capsa`)                      |
-| `VITE_DEFAULT_THEME_STYLE` | Pin a theme + hide the switcher                   |
-| `VITE_SITE_URL`            | Enables `sitemap.xml` + absolute `llms.txt` links |
-| `VITE_POSTHOG_KEY`         | Enables analytics (off by default)                |
-| `VITE_WORKOS_CLIENT_ID`    | Opt into auth (public by default)                 |
+| Variable                   | Effect                                                            |
+| -------------------------- | ----------------------------------------------------------------- |
+| `VITE_SITE_NAME`           | Brand name (default `Capsa`)                                      |
+| `VITE_DEFAULT_THEME_STYLE` | Pin a theme + hide the switcher                                   |
+| `VITE_SITE_URL`            | Enables `sitemap.xml`, canonical + `og:image` tags, absolute URLs |
+| `VITE_POSTHOG_KEY`         | Enables analytics (off by default)                                |
+| `VITE_WORKOS_CLIENT_ID`    | Opt into auth (public by default; disables prerendering)          |
+| `PRERENDER=0`              | Build-time: skip SSG, ship the plain SPA                          |
 
 See **Configuration** in the docs for the full list.
 
 ## Stack
 
-Vite · React 19 · TypeScript · Tamagui · MDX · Scalar (OpenAPI).
+Vite · React 19 · TypeScript · Tamagui · MDX · Scalar (OpenAPI) · Pagefind (search) · Satori (social cards).
 
 ## License
 

@@ -343,3 +343,11 @@ html {
 .sid-scalar .scalar-app .t-doc__sidebar {
   top: 0;
 }
+
+/* Nav elements rendered as real anchors (sidebar links, prev/next cards) —
+   crawlable + cmd-click friendly, without the browser's default link look. */
+a.sid-nav-link {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+}
