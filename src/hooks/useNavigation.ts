@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { navigation } from '../navigation';
 import type { AutoPages, NavGroup, NavTab } from '../navigation';
-import { loadManifest } from './useDocs';
+import { loadManifest, getManifestSync } from './useDocs';
 import type { ManifestEntry } from './useDocs';
 import { titleFromFilename } from '../lib/markdown';
 
@@ -87,9 +87,11 @@ export interface NavData {
 // Resolve the navigation config against the manifest, and figure out which tab
 // the current route belongs to.
 export function useNavigation(currentSlug: string | undefined, currentPath: string): NavData {
-  const [manifest, setManifest] = useState<ManifestEntry[] | null>(null);
+  // Cache-first (seeded by prerender/hydration); async fetch otherwise.
+  const [manifest, setManifest] = useState<ManifestEntry[] | null>(() => getManifestSync());
 
   useEffect(() => {
+    if (manifest !== null) return;
     let cancelled = false;
     loadManifest().then((m) => {
       if (!cancelled) setManifest(m);
@@ -97,7 +99,7 @@ export function useNavigation(currentSlug: string | undefined, currentPath: stri
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [manifest]);
 
   return useMemo<NavData>(() => {
     const entries = (manifest ?? []).filter((e) => !PRODUCT_SCOPE || e.product === PRODUCT_SCOPE);

@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import type { FC } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { YStack, XStack, ScrollView, Text } from 'tamagui';
 import { MagnifyingGlass, CaretRight } from '@phosphor-icons/react';
 
 import type { ResolvedGroup, ResolvedItem } from '../../hooks/useNavigation';
+import { normalizeSlug } from '../../hooks/useDocs';
+import { anchorNavProps } from '../../lib/navLink';
 import { NavIcon } from '../../lib/navIcons';
 import { useCommandPalette } from './CommandPalette';
 
@@ -14,13 +16,24 @@ interface SidebarProps {
   onNavigate?: () => void;
 }
 
-const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform);
+// Two-pass platform detection: the server (prerender) and first client render
+// both say false ("Ctrl K"), then Macs flip to "⌘ K" — a module-scope
+// navigator read would make the prerendered HTML mismatch Mac hydration.
+const noopSubscribe = () => () => {};
+const useIsMac = () =>
+  useSyncExternalStore(
+    noopSubscribe,
+    () => /Mac/i.test(navigator.platform),
+    () => false,
+  );
 
 const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) => {
   const navigate = useNavigate();
-  const { '*': currentSlug } = useParams();
+  const { '*': rawSlug } = useParams();
+  const currentSlug = normalizeSlug(rawSlug);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const { open: openPalette } = useCommandPalette();
+  const isMac = useIsMac();
 
   const go = (slug: string, headingId?: string) => {
     navigate(`/docs/${slug}${headingId ? `#${headingId}` : ''}`);
@@ -33,6 +46,7 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
     return (
       <XStack
         key={slug}
+        {...anchorNavProps(`/docs/${slug}`, () => go(slug))}
         alignItems="center"
         paddingVertical="$1.5"
         paddingRight="$2"
@@ -44,7 +58,6 @@ const Sidebar: FC<SidebarProps> = ({ groups, fullWidth = false, onNavigate }) =>
         borderLeftColor={active ? '$accent' : 'transparent'}
         backgroundColor={active ? '$color4' : 'transparent'}
         hoverStyle={{ backgroundColor: active ? '$color4' : '$color3' }}
-        onPress={() => go(slug)}
       >
         <Text fontSize={13.5} fontWeight={active ? '600' : '400'} color={active ? '$color12' : '$color10'}>
           {title}

@@ -5,7 +5,8 @@ import { Helmet } from 'react-helmet-async';
 import { XStack, YStack, Paragraph, Spinner, H1, Text } from 'tamagui';
 import { ArrowLeft, ArrowRight } from '@phosphor-icons/react';
 
-import { useDoc, useDocMeta } from '../../hooks/useDocs';
+import { useDoc, useDocMeta, normalizeSlug } from '../../hooks/useDocs';
+import { anchorNavProps } from '../../lib/navLink';
 import { useNavigation } from '../../hooks/useNavigation';
 import type { TocEntry } from '../../lib/markdown';
 import mdxComponents from '../../components/markdown/mdxComponents';
@@ -17,7 +18,10 @@ import { track } from '../../lib/analytics';
 import { SITE_NAME } from '../../lib/site';
 
 export default function DocPage() {
-  const { '*': slug } = useParams();
+  const { '*': rawSlug } = useParams();
+  // Trailing-slash URLs (static hosts serve prerendered dirs) keep the slash
+  // in the router splat — normalize before any lookups.
+  const slug = normalizeSlug(rawSlug);
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();
   const { doc, isLoading, error } = useDoc(slug);
@@ -108,7 +112,11 @@ export default function DocPage() {
               </XStack>
             </XStack>
 
-            <div ref={contentRef}>
+            {/* data-pagefind-body scopes the build-time search index to the
+                article — without it Pagefind would index the sidebar/nav text
+                on every page. Pages lacking the attribute (e.g. the docs
+                index) are skipped entirely. */}
+            <div ref={contentRef} data-pagefind-body>
               <MDXProvider components={mdxComponents}>
                 <doc.Component />
               </MDXProvider>
@@ -122,6 +130,7 @@ export default function DocPage() {
               <XStack marginTop="$6" gap="$3" flexWrap="wrap">
                 {prev ? (
                   <YStack
+                    {...anchorNavProps(`/docs/${prev.slug}`, () => navigate(`/docs/${prev.slug}`))}
                     flex={1}
                     minWidth={200}
                     borderWidth={1}
@@ -130,7 +139,6 @@ export default function DocPage() {
                     padding="$3"
                     cursor="pointer"
                     hoverStyle={{ borderColor: '$accentBorder' }}
-                    onPress={() => navigate(`/docs/${prev.slug}`)}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <ArrowLeft size={13} />
@@ -147,6 +155,7 @@ export default function DocPage() {
                 )}
                 {next && (
                   <YStack
+                    {...anchorNavProps(`/docs/${next.slug}`, () => navigate(`/docs/${next.slug}`))}
                     flex={1}
                     minWidth={200}
                     borderWidth={1}
@@ -156,7 +165,6 @@ export default function DocPage() {
                     cursor="pointer"
                     alignItems="flex-end"
                     hoverStyle={{ borderColor: '$accentBorder' }}
-                    onPress={() => navigate(`/docs/${next.slug}`)}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <Text fontSize={11} color="$colorPress">

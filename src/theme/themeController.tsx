@@ -3,7 +3,16 @@
 // pre-applied before hydration by the inline script in index.html, so there is
 // no flash of the wrong theme on load. Keep the storage keys and class logic
 // here in sync with that script.
-import { createContext, useContext, useState, useEffect, useCallback, type FC, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type FC,
+  ReactNode,
+} from 'react';
 
 // Base theme (light/dark)
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -95,23 +104,31 @@ const writeStored = (key: string, value: string) => {
 };
 
 export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [themeMode, setThemeModeState] = useState<ThemeMode>(
-    () => readStored(THEME_MODE_STORAGE_KEY, isThemeMode) ?? 'system',
-  );
-  const [themeStyle, setThemeStyleState] = useState<ThemeStyle>(
-    () => PINNED_THEME_STYLE ?? readStored(THEME_STYLE_STORAGE_KEY, isThemeStyle) ?? 'steel',
-  );
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme);
+  // Two-pass state for prerender/hydration safety: the server render and the
+  // first client render both use deterministic defaults (light, pinned-or-
+  // steel); the persisted values apply in a mount effect. Visuals are already
+  // correct before hydration because the index.html inline script sets the
+  // theme classes on <html> — only state consumers (mode icon, isRetro
+  // conditionals) flip one frame after mount.
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
+  const [themeStyle, setThemeStyleState] = useState<ThemeStyle>(PINNED_THEME_STYLE ?? 'steel');
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
 
-  // Listen for system theme changes
+  // Mount: adopt persisted + system values, then track system changes.
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const stored = readStored(THEME_MODE_STORAGE_KEY, isThemeMode);
+    if (stored) setThemeModeState(stored);
+    if (!PINNED_THEME_STYLE) {
+      const storedStyle = readStored(THEME_STYLE_STORAGE_KEY, isThemeStyle);
+      if (storedStyle) setThemeStyleState(storedStyle);
+    }
+    setSystemTheme(getSystemTheme());
 
+    if (!window.matchMedia) return;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
       setSystemTheme(e.matches ? 'dark' : 'light');
     };
-
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -126,7 +143,18 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
   // the <Theme> wrapper. Both the base class (t_dark) and the full theme class
   // (t_dark_steel) are applied; the full class must come last so its variables
   // win. Mirrors the pre-hydration script in index.html.
+  //
+  // The FIRST run is skipped entirely: it fires while state still holds the
+  // two-pass defaults, but the pre-hydration script has already applied the
+  // user's real theme to <html> — writing defaults here would flash the wrong
+  // theme for a frame. Once the mount effect adopts the persisted values, any
+  // actual change re-runs this effect and writes normally.
+  const firstThemeSync = useRef(true);
   useEffect(() => {
+    if (firstThemeSync.current) {
+      firstThemeSync.current = false;
+      return;
+    }
     const root = document.documentElement;
     const stale = Array.from(root.classList).filter((c) => c.startsWith('t_'));
     root.classList.remove(...stale);
