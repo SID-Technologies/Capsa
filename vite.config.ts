@@ -15,10 +15,16 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import remarkCodeTitle from './src/lib/remark-code-title';
 import remarkDirectiveCallouts from './src/lib/remark-directive-callouts';
 import { searchIndexPlugin } from './vite-plugins/search-index';
+import { prerenderPlugin } from './vite-plugins/prerender';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default defineConfig({
+// Two builds share this config (see the `build` script):
+//   1. `vite build --ssr src/entry-server.tsx` → dist-ssr (prerender bundle)
+//   2. `vite build`                            → dist (client)
+// The prerender plugin runs at the end of the client build and fills the
+// per-route HTML with rendered bodies using the dist-ssr bundle.
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     searchIndexPlugin({
       contentDir: path.resolve(__dirname, './content'),
@@ -64,6 +70,12 @@ export default defineConfig({
       config: path.resolve(__dirname, './src/tamagui.config.ts'),
     }),
     tsconfigPaths(),
+    // Must come after searchIndexPlugin: it overwrites the head-only
+    // per-route files with fully prerendered ones (closeBundle order).
+    prerenderPlugin({
+      manifestFile: path.resolve(__dirname, './public/docs-manifest.json'),
+      siteTitle: process.env.VITE_SITE_NAME || 'Capsa',
+    }),
   ],
 
   define: {
@@ -77,30 +89,40 @@ export default defineConfig({
     },
   },
 
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    target: 'esnext',
-    rollupOptions: {
-      output: {
-        // Split the heavy framework deps out of the main entry. Scalar stays in
-        // its own lazy chunk (loaded only on the API route) — not matched here.
-        // remark/rehype/highlight.js run at build time in the MDX plugin, so
-        // they are not in the client bundle at all.
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (/[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) {
-              return 'vendor-react';
-            }
-            if (id.includes('@tamagui') || /[\\/]tamagui[\\/]/.test(id)) return 'vendor-tamagui';
-            if (id.includes('@tabler')) return 'vendor-icons';
-            if (id.includes('@mdx-js')) return 'vendor-mdx';
-          }
-          if (id.includes('/src/theme/')) return 'vendor-themes';
+  // Bundle the UI stack into the SSR output rather than externalizing it —
+  // Node-resolving tamagui/react-native-web ESM at prerender time is fragile.
+  ssr: isSsrBuild ? { noExternal: [/tamagui/, /react-native/, /@fontsource/] } : undefined,
+
+  build: isSsrBuild
+    ? {
+        outDir: 'dist-ssr',
+        sourcemap: false,
+        target: 'esnext',
+      }
+    : {
+        outDir: 'dist',
+        sourcemap: true,
+        target: 'esnext',
+        rollupOptions: {
+          output: {
+            // Split the heavy framework deps out of the main entry. Scalar stays in
+            // its own lazy chunk (loaded only on the API route) — not matched here.
+            // remark/rehype/highlight.js run at build time in the MDX plugin, so
+            // they are not in the client bundle at all.
+            manualChunks(id) {
+              if (id.includes('node_modules')) {
+                if (/[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) {
+                  return 'vendor-react';
+                }
+                if (id.includes('@tamagui') || /[\\/]tamagui[\\/]/.test(id)) return 'vendor-tamagui';
+                if (id.includes('@tabler')) return 'vendor-icons';
+                if (id.includes('@mdx-js')) return 'vendor-mdx';
+              }
+              if (id.includes('/src/theme/')) return 'vendor-themes';
+            },
+          },
         },
       },
-    },
-  },
 
   server: {
     port: 3001,
@@ -109,4 +131,4 @@ export default defineConfig({
       allow: [searchForWorkspaceRoot(process.cwd()), path.resolve(__dirname, 'node_modules')],
     },
   },
-});
+}));

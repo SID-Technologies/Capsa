@@ -11,9 +11,10 @@ import { config } from './tamagui.config';
 //
 // The class is doubled (.t_dark_steel.t_dark_steel) so these rules beat
 // Tamagui's equal-specificity base rules regardless of style-tag order.
-export function injectThemeVariables(): void {
-  if (typeof document === 'undefined') return;
 
+export const THEME_VARS_STYLE_ID = 'capsa-theme-vars';
+
+export function buildThemeVariablesCSS(): string {
   const themes = config.themes as Record<string, Record<string, unknown>>;
   let css = '';
   for (const [name, theme] of Object.entries(themes)) {
@@ -30,9 +31,17 @@ export function injectThemeVariables(): void {
     const cls = `t_${name}`;
     css += `:root.${cls}.${cls}{${decls}}\n`;
   }
+  return css;
+}
+
+// Client-side injection. No-ops when the style tag already exists — prerendered
+// pages ship it inline in <head> (see vite-plugins/prerender.ts).
+export function injectThemeVariables(): void {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(THEME_VARS_STYLE_ID)) return;
 
   const el = document.createElement('style');
-  el.id = 'capsa-theme-vars';
-  el.textContent = css;
+  el.id = THEME_VARS_STYLE_ID;
+  el.textContent = buildThemeVariablesCSS();
   document.head.appendChild(el);
 }

@@ -4,6 +4,9 @@ import GithubSlugger from 'github-slugger';
 import matter from 'gray-matter';
 import type { Plugin, ResolvedConfig } from 'vite';
 
+import { escapeHtml, pageHtml } from './page-html';
+import type { ManifestEntry } from './page-html';
+
 // Build-time docs index. Walks the content/ tree and emits two files:
 //   • search-index.json  — full records (headings + body) for in-memory search
 //   • docs-manifest.json — slim records for nav, SEO meta, and the sitemap
@@ -26,15 +29,7 @@ export interface SearchHeading {
   id: string;
 }
 
-// Slim per-doc metadata for nav, SEO, and sitemap.
-export interface ManifestEntry {
-  slug: string;
-  title: string;
-  category: string;
-  description: string;
-  order: number;
-  product: string; // top-level folder unless overridden in frontmatter
-}
+export type { ManifestEntry };
 
 export interface SearchEntry extends ManifestEntry {
   headings: SearchHeading[];
@@ -242,30 +237,6 @@ function generate(opts: Options): number {
   }
 
   return visible.length;
-}
-
-const escapeHtml = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-// Rewrite the SPA shell's head for one doc page: title, description, OG tags,
-// plus canonical/og:url when the deploy has a public base URL.
-function pageHtml(shell: string, entry: ManifestEntry, siteName: string, siteUrl?: string): string {
-  const title = escapeHtml(`${entry.title} — ${siteName}`);
-  const desc = escapeHtml(entry.description || `${entry.title} — ${siteName} documentation.`);
-  let html = shell
-    .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
-    .replace(/(<meta name="description" content=")[^"]*(")/, `$1${desc}$2`)
-    .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${escapeHtml(entry.title)}$2`)
-    .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${desc}$2`)
-    .replace(/(<meta property="og:type" content=")[^"]*(")/, '$1article$2');
-  if (siteUrl) {
-    const url = `${siteUrl.replace(/\/$/, '')}/docs/${entry.slug}`;
-    html = html.replace(
-      '</head>',
-      `  <link rel="canonical" href="${url}" />\n    <meta property="og:url" content="${url}" />\n  </head>`,
-    );
-  }
-  return html;
 }
 
 export function searchIndexPlugin(options: Options): Plugin {

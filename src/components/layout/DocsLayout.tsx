@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { XStack, YStack } from 'tamagui';
 
 import { useNavigation } from '../../hooks/useNavigation';
+import { normalizeSlug } from '../../hooks/useDocs';
 import Sidebar from './Sidebar';
 import TopNav from './TopNav';
 
@@ -12,7 +13,7 @@ const DocsLayout: FC = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const slug = pathname.startsWith('/docs/') ? pathname.slice('/docs/'.length) : undefined;
+  const slug = pathname.startsWith('/docs/') ? normalizeSlug(pathname.slice('/docs/'.length)) : undefined;
   const nav = useNavigation(slug, pathname);
 
   const onTabSelect = (i: number) => {
