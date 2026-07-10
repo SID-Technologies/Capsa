@@ -7,7 +7,16 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**', '**/.tamagui/**', 'public/**'],
+    ignores: [
+      '**/dist/**',
+      '**/dist-ssr/**',
+      '**/build/**',
+      '**/node_modules/**',
+      '**/.tamagui/**',
+      'public/**',
+      'test-results/**',
+      'playwright-report/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
