@@ -13,8 +13,12 @@ React + Tamagui app you fully own and can edit.
 
 **[Live demo](https://capsa.romans.dev)** · **[Documentation](https://capsa.romans.dev/docs)**
 
-<!-- TODO: add a screenshot or GIF of the docs (palette open + a themed page) here. -->
-<!-- ![Capsa](./docs/screenshot.png) -->
+![Capsa landing page](./docs/home.png)
+
+<p align="center">
+  <img src="./docs/documentation.png" alt="Documentation page with sidebar, table of contents, and copy-page actions" width="49%" />
+  <img src="./docs/openapi.png" alt="Scalar OpenAPI reference, themed to match the site" width="49%" />
+</p>
 
 > Using Capsa for your own docs? Point the badges, demo link, and `VITE_GITHUB_URL`
 > at your repo and deployment.
