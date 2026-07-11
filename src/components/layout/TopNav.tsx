@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { XStack, YStack, Paragraph, Button, Text, Separator, Popover } from 'tamagui';
 import { Sun, Moon, Desktop, SignOut, Gear, List, GithubLogo } from '@phosphor-icons/react';
 import { useThemeController } from '@/theme/themeController';
@@ -11,6 +12,8 @@ import type { NavTab } from '../../navigation';
 import { NavIcon } from '../../lib/navIcons';
 import { SITE_NAME, GITHUB_URL } from '../../lib/site';
 import { IS_PUBLIC } from '../../lib/auth';
+import { HAS_HOME } from '../../hooks/useDocs';
+import { anchorNavProps } from '../../lib/navLink';
 
 const modeOptions: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
   { value: 'light', label: 'Light', Icon: Sun },
@@ -34,6 +37,10 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
   const { logout } = useAuth();
   const { isDark, toggleTheme, themeMode, themeStyle, setThemeMode, setThemeStyle } = useThemeController();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const navigate = useNavigate();
+  // Universal convention: the wordmark goes home — to the landing page when
+  // one exists, otherwise to the docs index.
+  const brandHref = HAS_HOME ? '/' : '/docs';
 
   return (
     <XStack
@@ -60,8 +67,16 @@ const TopNav: FC<TopNavProps> = ({ onMenuPress, showMenu = true, tabs = [], acti
         />
       )}
 
-      {/* Brand */}
-      <XStack alignItems="center" gap="$2" paddingRight="$2">
+      {/* Brand — links home (landing page when present, docs otherwise). */}
+      <XStack
+        {...anchorNavProps(brandHref, () => navigate(brandHref))}
+        alignItems="center"
+        gap="$2"
+        paddingRight="$2"
+        cursor="pointer"
+        hoverStyle={{ opacity: 0.8 }}
+        aria-label={`${SITE_TITLE} home`}
+      >
         <Paragraph fontWeight="700" fontSize="$6" letterSpacing={-0.3}>
           {SITE_TITLE}
         </Paragraph>

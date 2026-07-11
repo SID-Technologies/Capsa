@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
 import { Helmet } from 'react-helmet-async';
 import { XStack, YStack, Paragraph, Spinner, H1, Text } from 'tamagui';
-import { ArrowLeft, ArrowRight } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, PencilSimple } from '@phosphor-icons/react';
 
 import { useDoc, useDocMeta, normalizeSlug } from '../../hooks/useDocs';
 import { anchorNavProps } from '../../lib/navLink';
@@ -15,7 +15,7 @@ import DocFeedback from '../../components/layout/DocFeedback';
 import Footer from '../../components/layout/Footer';
 import PageActions from '../../components/markdown/PageActions';
 import { track } from '../../lib/analytics';
-import { SITE_NAME } from '../../lib/site';
+import { SITE_NAME, docEditUrl } from '../../lib/site';
 
 export default function DocPage() {
   const { '*': rawSlug } = useParams();
@@ -121,6 +121,20 @@ export default function DocPage() {
                 <doc.Component />
               </MDXProvider>
             </div>
+
+            {/* Edit on GitHub — the visible trust link (also in PageActions). */}
+            <XStack justifyContent="flex-end" marginTop="$4">
+              <a
+                className="sid-edit-link"
+                href={docEditUrl(slug ?? '')}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track('docs_edit_page', { slug })}
+              >
+                <PencilSimple size={13} />
+                Edit this page on GitHub
+              </a>
+            </XStack>
 
             {/* Was this helpful? */}
             <DocFeedback slug={slug ?? ''} />

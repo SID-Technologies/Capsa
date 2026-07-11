@@ -1,0 +1,70 @@
+---
+title: Landing Page
+description: Give your site a home page at / with hero, feature grid, and CTA components.
+order: 5
+---
+
+# Landing Page
+
+Create `content/home.mdx` and `/` renders it as a landing page — top navigation
+and footer included, no sidebar. Delete the file and `/` goes back to
+redirecting straight to `/docs`. No configuration involved.
+
+`home.mdx` is a **reserved file**: it never appears in the sidebar, search,
+`llms.txt`, or the docs manifest. Like every other page it's prerendered to
+static HTML at build time and gets its own social card.
+
+## Components
+
+Landing pages get four extra MDX components on top of the standard authoring
+set (callouts, code tabs, and friends all still work).
+
+### Hero
+
+```mdx title="content/home.mdx"
+<Hero
+  title="Documentation that ships itself"
+  tagline="One sentence on why your project matters."
+>
+  <LinkButton href="/docs/getting-started/quickstart" variant="accent">
+    Get started
+  </LinkButton>
+  <LinkButton href="https://github.com/your-org/your-repo">GitHub</LinkButton>
+</Hero>
+```
+
+Centered title + tagline; children render as a row of call-to-action buttons.
+
+### LinkButton
+
+`variant="accent"` for the primary action, default (outline) for secondary.
+Internal `href`s (starting with `/`) navigate client-side; external ones open
+in a new tab. Either way they're real links — crawlable and cmd-clickable.
+
+### FeatureGrid + Feature
+
+```mdx
+<FeatureGrid>
+  <Feature icon="rocket" title="Static and fast">
+    Body text — regular Markdown works here.
+  </Feature>
+  <Feature icon="book" title="MDX authoring">
+    Cards wrap responsively; three per row on desktop.
+  </Feature>
+</FeatureGrid>
+```
+
+`icon` takes the same names as the navigation config (`play`, `book`, `code`,
+`rocket`, `settings`, `search`, `shield`, …) — see `src/lib/navIcons.tsx`.
+
+:::tip
+This site's own home page is `content/home.mdx` in the Capsa repo — copy it as
+a starting point.
+:::
+
+## Notes
+
+- The landing page renders even on auth-gated deploys (it's your public front
+  door); the docs behind it still require sign-in.
+- Everything between the components is normal MDX — add headings, paragraphs,
+  images, or code blocks anywhere on the page.

@@ -119,16 +119,46 @@ export function prerenderPlugin(options: PrerenderOptions): Plugin {
         return;
       }
 
-      // '' renders the /docs index (DocsIndex); slugs render DocPage.
-      const routes: Array<{ slug: string; entry: ManifestEntry | null }> = [
-        { slug: '', entry: null },
-        ...entries.map((e) => ({ slug: e.slug, entry: e })),
+      // Route set: optional landing page at `/` (content/home.mdx — written to
+      // dist/index.html; safe because the shell is already in memory), the
+      // /docs index, and every doc. Doc routes also get a flat <slug>.html.
+      const hasHome = existsSync(join(resolved.root, 'content', 'home.mdx'));
+      interface Route {
+        url: string;
+        entry: ManifestEntry | null;
+        dirDest: string;
+        flatDest?: string;
+        ogRel: string;
+      }
+      const routes: Route[] = [
+        ...(hasHome
+          ? [
+              {
+                url: '/',
+                entry: null,
+                dirDest: join(outDir, 'index.html'),
+                ogRel: 'assets/og/home.png',
+              },
+            ]
+          : []),
+        {
+          url: '/docs',
+          entry: null,
+          dirDest: join(outDir, 'docs', 'index.html'),
+          ogRel: 'assets/og/docs-index.png',
+        },
+        ...entries.map((e) => ({
+          url: `/docs/${e.slug}`,
+          entry: e,
+          dirDest: join(outDir, 'docs', e.slug, 'index.html'),
+          flatDest: join(outDir, 'docs', `${e.slug}.html`),
+          ogRel: `assets/og/${e.slug}.png`,
+        })),
       ];
 
       let rendered = 0;
-      for (const { slug, entry } of routes) {
+      for (const { url, entry, dirDest, flatDest, ogRel } of routes) {
         try {
-          const url = slug ? `/docs/${slug}` : '/docs';
           const { appHtml } = render(url);
           const { body, styles } = extractHoistedStyles(stripHelmetDuplicates(appHtml));
 
@@ -143,12 +173,11 @@ export function prerenderPlugin(options: PrerenderOptions): Plugin {
               description: entry?.description || siteDescription,
               category: entry?.category,
             });
-            const relPath = slug ? `assets/og/${slug}.png` : 'assets/og/docs-index.png';
-            const imgDest = join(outDir, relPath);
+            const imgDest = join(outDir, ogRel);
             mkdirSync(dirname(imgDest), { recursive: true });
             writeFileSync(imgDest, png);
             if (siteUrl) {
-              const abs = `${siteUrl}/${relPath}`;
+              const abs = `${siteUrl}/${ogRel}`;
               ogTags =
                 `<meta property="og:image" content="${abs}" />\n` +
                 `    <meta property="og:image:width" content="1200" />\n` +
@@ -156,11 +185,17 @@ export function prerenderPlugin(options: PrerenderOptions): Plugin {
                 `    <meta name="twitter:image" content="${abs}" />\n    `;
             }
           } catch (err) {
-            this.warn(`prerender: og image for "${slug || '/docs'}" failed — ${(err as Error).message}`);
+            this.warn(`prerender: og image for "${url}" failed — ${(err as Error).message}`);
           }
 
+          // Route marker: dist/index.html doubles as the SPA fallback for
+          // every non-prerendered URL, so the client entry must know WHICH
+          // route this HTML was rendered for — it hydrates only on a match
+          // and client-renders otherwise (see entry-client.tsx).
+          const marker = `<meta name="capsa-prerendered" content="${url}" />`;
+
           let page = (entry ? pageHtml(shell, entry, siteName, siteUrl) : shell)
-            .replace('</head>', `${styles}\n  ${ogTags}${headExtras}`)
+            .replace('</head>', `${styles}\n  ${marker}\n  ${ogTags}${headExtras}`)
             .replace(ROOT_DIV, `<div id="root">${body}</div>`);
           if (ogTags) {
             page = page.replace(
@@ -169,16 +204,13 @@ export function prerenderPlugin(options: PrerenderOptions): Plugin {
             );
           }
 
-          const dirDest = slug
-            ? join(outDir, 'docs', slug, 'index.html')
-            : join(outDir, 'docs', 'index.html');
           mkdirSync(dirname(dirDest), { recursive: true });
           writeFileSync(dirDest, page, 'utf-8');
-          if (slug) writeFileSync(join(outDir, 'docs', `${slug}.html`), page, 'utf-8');
+          if (flatDest) writeFileSync(flatDest, page, 'utf-8');
           rendered++;
         } catch (err) {
           // Leave the head-only fallback for this route; keep going.
-          this.warn(`prerender: route "${slug || '/docs'}" failed — ${(err as Error).message}`);
+          this.warn(`prerender: route "${url}" failed — ${(err as Error).message}`);
         }
       }
       this.info?.(`prerender: rendered ${rendered}/${routes.length} routes`);

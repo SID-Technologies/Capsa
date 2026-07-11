@@ -163,9 +163,60 @@ test('sidebar links are anchors but navigate client-side', async ({ page }) => {
   expect(stillSpa, 'plain click must navigate client-side, not reload').toBe(true);
 });
 
-test('Scalar route stays a client-rendered shell', async ({ request }) => {
-  const html = await (await request.get('/docs/api')).text();
+test('landing page is prerendered at / with route marker', async ({ request }) => {
+  const res = await request.get('/');
+  expect(res.ok()).toBe(true);
+  const html = await res.text();
   const root = html.split('<div id="root">')[1] ?? '';
-  // No prerendered content for the API route — it renders client-side.
-  expect(root.slice(0, 20).trim().startsWith('</div>')).toBe(true);
+  expect(root).toContain('Documentation that ships itself');
+  expect(root).toContain('Get started');
+  expect(html).toContain('name="capsa-prerendered" content="/"');
+  expect(html.match(/<title>/g)).toHaveLength(1);
+});
+
+test('landing page hydrates without discarding DOM', async ({ page }) => {
+  await expectHydrated(page, '/');
+});
+
+test('SPA fallback for non-prerendered routes renders cleanly', async ({ page }) => {
+  // Unknown URLs are served the landing-page HTML (dist/index.html is the
+  // static-host fallback). The route marker must force a clean client render
+  // — never a hydration of home markup against a 404 tree.
+  const errors = collectHydrationErrors(page);
+  await page.goto('/docs/this-page-does-not-exist', { waitUntil: 'networkidle' });
+  await expect(page.locator('#root')).toContainText('404');
+  expect(errors).toEqual([]);
+});
+
+test('home is reserved — absent from manifest and search', async ({ request }) => {
+  const manifest = (await (await request.get('/docs-manifest.json')).json()) as {
+    slug: string;
+  }[];
+  expect(manifest.some((e) => e.slug === 'home')).toBe(false);
+  expect(manifest.some((e) => e.slug === 'guides/landing-page')).toBe(true);
+});
+
+test('docs pages link to GitHub editing and back home', async ({ page, request }) => {
+  const html = await (await request.get('/docs/guides/theming')).text();
+  expect(html).toContain('/edit/main/content/guides/theming.mdx');
+  expect(html).toContain('href="/"'); // brand wordmark → landing page
+
+  await page.goto('/docs/guides/theming/', { waitUntil: 'networkidle' });
+  await expect(page.locator('a.sid-edit-link')).toContainText('Edit this page');
+  await page.locator('a.sid-nav-link[href="/"]').first().click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('#root h1')).toContainText('Documentation that ships itself');
+});
+
+test('Scalar route client-renders via the marker-mismatch fallback', async ({ page, request }) => {
+  // /docs/api is not prerendered; static hosts serve the landing-page HTML as
+  // the SPA fallback. The route marker ("/") must not match, forcing a clean
+  // client render of the real route — never hydration of home markup.
+  const html = await (await request.get('/docs/api')).text();
+  expect(html).toContain('name="capsa-prerendered" content="/"');
+
+  const errors = collectHydrationErrors(page);
+  await page.goto('/docs/api', { waitUntil: 'networkidle' });
+  await expect(page.locator('.t-doc__sidebar')).toBeVisible({ timeout: 30_000 });
+  expect(errors).toEqual([]);
 });

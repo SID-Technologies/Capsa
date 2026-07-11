@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { Copy, Check, CaretDown, MarkdownLogo, OpenAiLogo, Sparkle } from '@phosphor-icons/react';
+import {
+  Copy,
+  Check,
+  CaretDown,
+  MarkdownLogo,
+  OpenAiLogo,
+  Sparkle,
+  PencilSimple,
+} from '@phosphor-icons/react';
 
 import { track } from '../../lib/analytics';
+import { docEditUrl } from '../../lib/site';
 
 // Mintlify-style content-layer dropdown: copy the page as Markdown, view the
 // raw .md, or open it in an LLM. Zero backend, zero token cost — the user's own
@@ -103,6 +112,21 @@ export default function PageActions({ slug }: { slug: string }) {
               <Sparkle size={15} />
             </span>{' '}
             Open in Claude
+          </a>
+          <a
+            className="sid-pageactions-item"
+            href={docEditUrl(slug)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              track('docs_edit_page', { slug });
+              setOpen(false);
+            }}
+          >
+            <span>
+              <PencilSimple size={15} />
+            </span>{' '}
+            Edit this page
           </a>
         </div>
       )}
