@@ -25,6 +25,9 @@ React + Tamagui app you fully own and can edit.
 ## Features
 
 - **MDX content** — Markdown with React components when you need them.
+- **Landing page** — drop in `content/home.mdx` and `/` becomes a real home
+  page with hero, feature-grid, and CTA components; delete it and `/` redirects
+  to the docs.
 - **Prerendered (SSG)** — every doc ships as real static HTML with the full
   article and crawlable nav links, then hydrates into the SPA. SEO-complete
   out of the box: titles, descriptions, OpenGraph, canonical URLs, sitemap.
@@ -38,6 +41,8 @@ React + Tamagui app you fully own and can edit.
 - **Theming** — four styles × light/dark, token-driven and brandable, with
   zero-flash persistence.
 - **AI-native** — generates `llms.txt`, per-page "Copy as Markdown", and "Open in ChatGPT/Claude".
+- **Edit this page** — every doc links to its source on GitHub (menu + below
+  the article), so readers can send fixes.
 - **Authoring components** — callouts, tabbed code samples, API method badges, see-also cards.
 - **Multi-deploy** — env-driven, so one codebase powers many branded docs sites.
 - **Public by default** — auth is opt-in; a fresh clone runs with zero config.

@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly VITE_SITE_ORG?: string;
   readonly VITE_SITE_URL?: string;
   readonly VITE_GITHUB_URL?: string;
+  readonly VITE_GITHUB_BRANCH?: string;
   readonly VITE_STATUS_URL?: string;
   readonly VITE_SUPPORT_URL?: string;
   // Theming

@@ -9,8 +9,10 @@ import { IS_PUBLIC } from './lib/auth';
 import AuthGuard from './components/layout/AuthGuard';
 import DocsLayout from './components/layout/DocsLayout';
 import LoginPage from './pages/authentication/LoginPage';
+import HomePage from './pages/HomePage';
 import DocPage from './pages/docs/DocPage';
 import DocsIndex from './pages/docs/DocsIndex';
+import { HAS_HOME } from './hooks/useDocs';
 
 // Lazy so Scalar (heavy) is split out of the main bundle.
 const ApiReference = lazy(() => import('./pages/ApiReference'));
@@ -22,8 +24,13 @@ const App: FC = () => {
   }, [location.pathname]);
 
   const routes = useRoutes([
-    // Public deploys skip the login screen entirely.
-    { path: '/', element: IS_PUBLIC ? <Navigate to="/docs" replace /> : <LoginPage /> },
+    // With a content/home.mdx, `/` is the landing page — public even on gated
+    // deploys (it's marketing; the docs links inside still hit AuthGuard).
+    // Otherwise: public deploys skip straight to the docs.
+    {
+      path: '/',
+      element: HAS_HOME ? <HomePage /> : IS_PUBLIC ? <Navigate to="/docs" replace /> : <LoginPage />,
+    },
     { path: '/login', element: IS_PUBLIC ? <Navigate to="/docs" replace /> : <LoginPage /> },
     {
       path: '/docs',

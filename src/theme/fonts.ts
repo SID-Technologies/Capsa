@@ -63,16 +63,29 @@ export const spaceGroteskFont = createFont({
     15: 124,
     16: 150,
   },
-  // Clamped to the weights Space Grotesk actually ships (400–700) — heavier
-  // values would render as synthesized faux bold.
+  // Tamagui resolves the weight for sized text from the SAME key as the size
+  // (fontSize="$5" → weight['5']), so an escalating map here silently bolds
+  // every large paragraph — body text must default to 400 at every size.
+  // Headings and emphasis set fontWeight explicitly. (Space Grotesk ships
+  // 400–700; see the imports above.)
   weight: {
     1: '400',
     2: '400',
-    3: '500',
-    4: '600',
-    5: '700',
-    6: '700',
-    7: '700',
+    3: '400',
+    4: '400',
+    5: '400',
+    6: '400',
+    7: '400',
+    8: '400',
+    9: '400',
+    10: '400',
+    11: '400',
+    12: '400',
+    13: '400',
+    14: '400',
+    15: '400',
+    16: '400',
+    true: '400',
   },
   letterSpacing: {
     1: 0,

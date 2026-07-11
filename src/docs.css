@@ -351,3 +351,23 @@ a.sid-nav-link {
   text-decoration: none;
   display: flex;
 }
+
+/* ── "Edit this page" link (below the article) ─────────────────────────── */
+a.sid-edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--colorPress);
+  text-decoration: none;
+}
+a.sid-edit-link:hover {
+  color: var(--accent);
+}
+
+/* Base font for any text node that escapes the Tamagui component tree (bare
+   MDX text on the landing page, portaled fragments) — never fall to serif. */
+body {
+  font-family: 'Space Grotesk', sans-serif;
+}

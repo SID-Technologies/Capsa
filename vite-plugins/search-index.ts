@@ -133,11 +133,19 @@ function buildEntry(contentDir: string, file: string): SearchEntry {
   };
 }
 
-function writeSitemap(sitemapFile: string, siteUrl: string, slugs: string[], lastmod: string): void {
+function writeSitemap(
+  sitemapFile: string,
+  siteUrl: string,
+  slugs: string[],
+  lastmod: string,
+  includeRoot: boolean,
+): void {
   const base = siteUrl.replace(/\/$/, '');
-  const urls = slugs
-    .map((slug) => `  <url><loc>${base}/docs/${slug}</loc><lastmod>${lastmod}</lastmod></url>`)
-    .join('\n');
+  const urls = [
+    // The landing page (content/home.mdx) lives at the site root.
+    ...(includeRoot ? [`  <url><loc>${base}/</loc><lastmod>${lastmod}</lastmod></url>`] : []),
+    ...slugs.map((slug) => `  <url><loc>${base}/docs/${slug}</loc><lastmod>${lastmod}</lastmod></url>`),
+  ].join('\n');
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
   mkdirSync(dirname(sitemapFile), { recursive: true });
   writeFileSync(sitemapFile, xml, 'utf-8');
@@ -190,8 +198,12 @@ function writeLlms(opts: Options, visible: SearchEntry[]): void {
 function generate(opts: Options): number {
   const { contentDir, outFile, manifestFile, sitemapFile, siteUrl } = opts;
   const all = walk(contentDir).map((f) => buildEntry(contentDir, f));
-  // Drafts (hidden: true) are excluded from search and nav alike.
-  const visible = all.filter((e) => !e.hidden);
+  // content/home.mdx is the reserved landing page (rendered at `/`, see
+  // src/App.tsx) — it is NOT a doc: exclude it from search, the manifest,
+  // llms.txt, per-page md, and /docs/* routes. Drafts (hidden: true) are
+  // excluded from search and nav alike.
+  const hasHome = all.some((e) => e.slug === 'home');
+  const visible = all.filter((e) => !e.hidden && e.slug !== 'home');
   visible.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 
   mkdirSync(dirname(outFile), { recursive: true });
@@ -216,6 +228,7 @@ function generate(opts: Options): number {
       siteUrl,
       visible.map((e) => e.slug),
       lastmod,
+      hasHome,
     );
   }
 

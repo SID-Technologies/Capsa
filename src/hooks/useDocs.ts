@@ -7,6 +7,11 @@ import { track } from '../lib/analytics';
 // Each loader resolves to a module whose default export is the MDX component.
 const docModules = import.meta.glob<{ default: ComponentType }>('/content/**/*.mdx');
 
+// content/home.mdx is a RESERVED file: when present, `/` renders it as the
+// landing page (App.tsx) and the build pipeline keeps it out of docs nav,
+// search, and the manifest. Static at build time in both client + SSR bundles.
+export const HAS_HOME = '/content/home.mdx' in docModules;
+
 export interface NavItem {
   slug: string;
   title: string;
