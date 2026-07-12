@@ -47,6 +47,8 @@ React + Tamagui app you fully own and can edit.
 - **AI-native** — generates `llms.txt`, per-page "Copy as Markdown", and "Open in ChatGPT/Claude".
 - **Edit this page** — every doc links to its source on GitHub (menu + below
   the article), so readers can send fixes.
+- **Changelog** — dated release notes in `content/changelog/` get their own
+  tab, a newest-first listing, and an RSS feed.
 - **Authoring components** — callouts, tabbed code samples, API method badges, see-also cards.
 - **Multi-deploy** — env-driven, so one codebase powers many branded docs sites.
 - **Public by default** — auth is opt-in; a fresh clone runs with zero config.

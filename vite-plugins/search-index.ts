@@ -47,6 +47,7 @@ interface Options {
   llmsFile?: string; // llms.txt (curated index for AI agents)
   llmsFullFile?: string; // llms-full.txt (concatenated content)
   pagesDir?: string; // per-page raw markdown for the "Copy page" action
+  rssFile?: string; // feed.xml — RSS of dated changelog entries (public deploys)
   siteTitle?: string;
 }
 
@@ -119,6 +120,15 @@ function buildEntry(contentDir: string, file: string): SearchEntry {
 
   const description = typeof fm.description === 'string' ? fm.description : extractExcerpt(content);
 
+  // gray-matter parses unquoted YAML dates into Date objects — normalize both
+  // forms to ISO YYYY-MM-DD.
+  const date =
+    typeof fm.date === 'string'
+      ? fm.date
+      : fm.date instanceof Date
+        ? fm.date.toISOString().slice(0, 10)
+        : undefined;
+
   return {
     slug,
     title: typeof fm.title === 'string' ? fm.title : titleFromFilename(filename),
@@ -126,6 +136,7 @@ function buildEntry(contentDir: string, file: string): SearchEntry {
     description,
     order: typeof fm.order === 'number' ? fm.order : Number.MAX_SAFE_INTEGER,
     product: typeof fm.product === 'string' ? fm.product : category,
+    date,
     hidden: fm.hidden === true,
     headings: extractHeadings(content),
     excerpt: extractExcerpt(content),
@@ -149,6 +160,40 @@ function writeSitemap(
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
   mkdirSync(dirname(sitemapFile), { recursive: true });
   writeFileSync(sitemapFile, xml, 'utf-8');
+}
+
+// RSS 2.0 feed of dated changelog entries (newest first). Emitted only on
+// public deploys (needs absolute URLs, like the sitemap). Whether the last
+// generate() emitted a feed is tracked so transformIndexHtml can advertise it.
+let rssEmitted = false;
+export const hasRss = () => rssEmitted;
+
+function writeRss(rssFile: string, siteUrl: string, siteTitle: string, entries: SearchEntry[]): void {
+  const base = siteUrl.replace(/\/$/, '');
+  const items = entries
+    .map(
+      (e) =>
+        `    <item>\n` +
+        `      <title>${escapeHtml(e.title)}</title>\n` +
+        `      <link>${base}/docs/${e.slug}</link>\n` +
+        `      <guid>${base}/docs/${e.slug}</guid>\n` +
+        `      <pubDate>${new Date(`${e.date}T00:00:00Z`).toUTCString()}</pubDate>\n` +
+        `      <description>${escapeHtml(e.description)}</description>\n` +
+        `    </item>`,
+    )
+    .join('\n');
+  const xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<rss version="2.0">\n` +
+    `  <channel>\n` +
+    `    <title>${escapeHtml(siteTitle)} Changelog</title>\n` +
+    `    <link>${base}/docs/changelog</link>\n` +
+    `    <description>${escapeHtml(`Release notes and updates for ${siteTitle}.`)}</description>\n` +
+    `${items}\n` +
+    `  </channel>\n` +
+    `</rss>\n`;
+  mkdirSync(dirname(rssFile), { recursive: true });
+  writeFileSync(rssFile, xml, 'utf-8');
 }
 
 // llms.txt — a curated, link-first index for AI coding assistants (the emerging
@@ -210,14 +255,17 @@ function generate(opts: Options): number {
   writeFileSync(outFile, JSON.stringify(visible), 'utf-8');
 
   // Slim manifest: nav + SEO + sitemap don't need headings/body.
-  const manifest: ManifestEntry[] = visible.map(({ slug, title, category, description, order, product }) => ({
-    slug,
-    title,
-    category,
-    description,
-    order,
-    product,
-  }));
+  const manifest: ManifestEntry[] = visible.map(
+    ({ slug, title, category, description, order, product, date }) => ({
+      slug,
+      title,
+      category,
+      description,
+      order,
+      product,
+      ...(date ? { date } : {}),
+    }),
+  );
   mkdirSync(dirname(manifestFile), { recursive: true });
   writeFileSync(manifestFile, JSON.stringify(manifest), 'utf-8');
 
@@ -230,6 +278,17 @@ function generate(opts: Options): number {
       lastmod,
       hasHome,
     );
+  }
+
+  rssEmitted = false;
+  if (opts.rssFile && siteUrl) {
+    const changelog = visible
+      .filter((e) => e.category === 'changelog' && e.date)
+      .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+    if (changelog.length > 0) {
+      writeRss(opts.rssFile, siteUrl, opts.siteTitle ?? 'Documentation', changelog);
+      rssEmitted = true;
+    }
   }
 
   writeLlms(opts, visible);
@@ -271,10 +330,18 @@ export function searchIndexPlugin(options: Options): Plugin {
       const siteName = env.VITE_SITE_NAME || options.siteTitle || 'Capsa';
       const description =
         env.VITE_SITE_DESCRIPTION || `${siteName} documentation — guides and API reference.`;
-      return html
+      let out = html
         .replaceAll('__CAPSA_SITE_NAME__', escapeHtml(siteName))
         .replaceAll('__CAPSA_SITE_DESCRIPTION__', escapeHtml(description))
         .replaceAll('__CAPSA_PINNED_THEME__', env.VITE_DEFAULT_THEME_STYLE || '');
+      // Advertise the changelog feed when generate() emitted one this build.
+      if (rssEmitted) {
+        out = out.replace(
+          '</head>',
+          `  <link rel="alternate" type="application/rss+xml" title="${escapeHtml(siteName)} Changelog" href="/feed.xml" />\n  </head>`,
+        );
+      }
+      return out;
     },
     // After the bundle is on disk, stamp out one HTML file per doc route so
     // link unfurls and search snippets see real per-page metadata.

@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, PencilSimple } from '@phosphor-icons/react';
 import { useDoc, useDocMeta, normalizeSlug } from '../../hooks/useDocs';
 import { anchorNavProps } from '../../lib/navLink';
 import { useNavigation } from '../../hooks/useNavigation';
+import { formatDate } from '../../lib/markdown';
 import type { TocEntry } from '../../lib/markdown';
 import mdxComponents from '../../components/markdown/mdxComponents';
 import TableOfContents from '../../components/layout/TableOfContents';
@@ -81,12 +82,16 @@ export default function DocPage() {
   const prev = idx > 0 ? orderedPages[idx - 1] : undefined;
   const next = idx >= 0 && idx < orderedPages.length - 1 ? orderedPages[idx + 1] : undefined;
 
+  // Frontmatter title (via the manifest) beats the filename-derived one —
+  // e.g. "v0.2.0 — …" instead of "V0 2 0" for changelog entries.
+  const pageTitle = meta?.title ?? doc.title;
+
   return (
     <XStack flex={1} height="100%" minHeight={0}>
       <Helmet>
-        <title>{`${doc.title} — ${SITE_NAME}`}</title>
+        <title>{`${pageTitle} — ${SITE_NAME}`}</title>
         {meta?.description && <meta name="description" content={meta.description} />}
-        <meta property="og:title" content={doc.title} />
+        <meta property="og:title" content={pageTitle} />
         {meta?.description && <meta property="og:description" content={meta.description} />}
         <meta property="og:type" content="article" />
       </Helmet>
@@ -105,8 +110,14 @@ export default function DocPage() {
                 /
               </Text>
               <Text fontSize={12} color="$color11" fontWeight="500">
-                {doc.title}
+                {pageTitle}
               </Text>
+              {/* Dated docs (changelog entries) show their date inline. */}
+              {meta?.date && (
+                <Text fontSize={12} color="$colorPress">
+                  · {formatDate(meta.date)}
+                </Text>
+              )}
               <XStack marginLeft="auto">
                 <PageActions slug={slug ?? ''} />
               </XStack>

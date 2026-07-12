@@ -12,6 +12,7 @@ import LoginPage from './pages/authentication/LoginPage';
 import HomePage from './pages/HomePage';
 import DocPage from './pages/docs/DocPage';
 import DocsIndex from './pages/docs/DocsIndex';
+import ChangelogIndex from './pages/docs/ChangelogIndex';
 import { HAS_HOME } from './hooks/useDocs';
 
 // Lazy so Scalar (heavy) is split out of the main bundle.
@@ -51,6 +52,9 @@ const App: FC = () => {
             </Suspense>
           ),
         },
+        // Exact segment only — /docs/changelog/<entry> still hits the splat
+        // below and renders as a normal doc.
+        { path: 'changelog', element: <ChangelogIndex /> },
         { path: '*', element: <DocPage /> },
       ],
     },

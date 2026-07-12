@@ -1,0 +1,29 @@
+---
+title: v0.2.0 — Prerendering, search, and a front door
+date: "2026-07-10"
+description: Full static prerendering, Pagefind search, social cards, a landing page, and edit-this-page links.
+---
+
+# v0.2.0 — Prerendering, search, and a front door
+
+The release that makes Capsa sites fully static-first.
+
+## Added
+
+- **Full prerendering (SSG)** — every doc ships as real HTML with the complete
+  article and crawlable nav links, then hydrates into the SPA. `PRERENDER=0`
+  opts out.
+- **Pagefind search** — the ⌘K palette now runs on a typo-tolerant static
+  index built from the prerendered pages; no search service required.
+- **Social cards** — a branded `og:image` PNG is generated per page at build
+  time.
+- **Landing page** — drop in `content/home.mdx` and `/` becomes a real home
+  page with hero, feature-grid, and CTA components.
+- **Edit this page** — every doc links to its source on GitHub.
+
+## Fixed
+
+- Body text rendered semi-bold site-wide due to size-linked font weights; all
+  body sizes now default to weight 400.
+- Theme styles now apply their full semantic token sets (accents, sidebar
+  colors, radii) in both JS and CSS.

@@ -1,0 +1,49 @@
+---
+title: Changelog
+description: Publish dated release notes with a listing page and an RSS feed.
+order: 6
+---
+
+# Changelog
+
+Add dated MDX files under `content/changelog/` and Capsa gives you a
+**Changelog tab**, a newest-first listing at `/docs/changelog`, per-entry pages,
+and an RSS feed — no configuration.
+
+## Writing an entry
+
+```mdx title="content/changelog/v1-2-0.mdx"
+---
+title: v1.2.0 — Webhooks
+date: "2026-08-01"
+description: Outbound webhooks, retries, and a new signing scheme.
+---
+
+# v1.2.0 — Webhooks
+
+## Added
+
+- Outbound webhooks with automatic retries.
+```
+
+- `date` (ISO `YYYY-MM-DD`, quoted) drives the listing order and shows next to
+  the breadcrumb on the entry page.
+- `title` and `description` appear on the listing card, in search, and in the
+  RSS feed.
+- Entries are otherwise **normal docs**: searchable, prerendered, social-carded,
+  with edit-on-GitHub links — everything a page under `content/` gets.
+
+## How it behaves
+
+- Entries never appear in the Documentation sidebar — the changelog is its own
+  tab (an `href` tab in `src/navigation.ts`, like the API Reference).
+- The listing page at `/docs/changelog` sorts entries newest-first by `date`.
+- Remove the `content/changelog/` folder and the tab simply 404s — delete the
+  tab entry in `src/navigation.ts` to hide it entirely.
+
+## RSS
+
+On deploys with `VITE_SITE_URL` set, the build emits `feed.xml` (RSS 2.0) with
+every dated entry, and the site `<head>` advertises it via
+`<link rel="alternate">`. Readers and release-watchers can subscribe to
+`https://your-site/feed.xml`.
