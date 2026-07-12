@@ -33,6 +33,7 @@ export interface ManifestEntry {
   description: string;
   order: number;
   product: string;
+  date?: string; // ISO YYYY-MM-DD — set on changelog entries
 }
 
 // Optional per-product scope (4.1): when set, only that product's docs show.

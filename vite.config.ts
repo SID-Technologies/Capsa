@@ -38,6 +38,8 @@ export default defineConfig(({ isSsrBuild }) => ({
       llmsFullFile: path.resolve(__dirname, './public/llms-full.txt'),
       // Per-page raw markdown for the "Copy page" action (served at /md/<slug>.md).
       pagesDir: path.resolve(__dirname, './public/md'),
+      // RSS feed of dated changelog entries — emitted only with a public base URL.
+      rssFile: path.resolve(__dirname, './public/feed.xml'),
       siteTitle: process.env.VITE_SITE_NAME || 'Capsa',
     }),
     // MDX must run before the React plugin so its JSX output is transformed.

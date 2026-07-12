@@ -9,6 +9,7 @@ export interface ManifestEntry {
   description: string;
   order: number;
   product: string; // top-level folder unless overridden in frontmatter
+  date?: string; // ISO YYYY-MM-DD — set on changelog entries
 }
 
 export const escapeHtml = (s: string) =>

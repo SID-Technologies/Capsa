@@ -13,6 +13,7 @@ public/docs-manifest.json
 public/sitemap.xml
 public/llms.txt
 public/llms-full.txt
+public/feed.xml
 public/md/
 
 # Playwright

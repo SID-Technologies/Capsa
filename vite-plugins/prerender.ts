@@ -147,6 +147,26 @@ export function prerenderPlugin(options: PrerenderOptions): Plugin {
           dirDest: join(outDir, 'docs', 'index.html'),
           ogRel: 'assets/og/docs-index.png',
         },
+        // Changelog listing — a synthetic entry rides pageHtml() so the route
+        // gets a real title/description/canonical and a "Changelog" OG card.
+        ...(entries.some((e) => e.category === 'changelog')
+          ? [
+              {
+                url: '/docs/changelog',
+                entry: {
+                  slug: 'changelog',
+                  title: 'Changelog',
+                  description: `Release notes and updates for ${siteName}.`,
+                  category: 'changelog',
+                  order: 0,
+                  product: '',
+                } satisfies ManifestEntry,
+                dirDest: join(outDir, 'docs', 'changelog', 'index.html'),
+                flatDest: join(outDir, 'docs', 'changelog.html'),
+                ogRel: 'assets/og/changelog.png',
+              },
+            ]
+          : []),
         ...entries.map((e) => ({
           url: `/docs/${e.slug}`,
           entry: e,

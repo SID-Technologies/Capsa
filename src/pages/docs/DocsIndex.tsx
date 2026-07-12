@@ -5,8 +5,10 @@ import { useDocsList } from '../../hooks/useDocs';
 import { SITE_NAME } from '../../lib/site';
 
 export default function DocsIndex() {
-  const { navTree } = useDocsList();
+  const { navTree: fullTree } = useDocsList();
   const navigate = useNavigate();
+  // Changelog entries have their own tab + listing — no category card here.
+  const navTree = fullTree.filter((category) => category.name !== 'changelog');
 
   return (
     <YStack flex={1} padding="$6" paddingTop="$4" gap="$6" overflow="scroll">

@@ -47,5 +47,10 @@ export const navigation: NavConfig = {
       icon: 'code',
       href: '/docs/api',
     },
+    {
+      tab: 'Changelog',
+      icon: 'file',
+      href: '/docs/changelog',
+    },
   ],
 };

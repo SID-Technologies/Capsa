@@ -208,6 +208,50 @@ test('docs pages link to GitHub editing and back home', async ({ page, request }
   await expect(page.locator('#root h1')).toContainText('Documentation that ships itself');
 });
 
+test('changelog listing is prerendered newest-first', async ({ request }) => {
+  const html = await (await request.get('/docs/changelog')).text();
+  expect(html).toContain('<title>Changelog — Capsa</title>');
+  const root = html.split('<div id="root">')[1] ?? '';
+  const v2 = root.indexOf('v0.2.0');
+  const v1 = root.indexOf('v0.1.0');
+  expect(v2).toBeGreaterThan(-1);
+  expect(v1).toBeGreaterThan(-1);
+  expect(v2, 'newest entry listed first').toBeLessThan(v1);
+  expect(root).toContain('Jul 10, 2026'); // TZ-free formatted date
+});
+
+test('changelog entry renders as a doc with its date and hydrates', async ({ page, request }) => {
+  const html = await (await request.get('/docs/changelog/v0-2-0')).text();
+  const root = html.split('<div id="root">')[1] ?? '';
+  expect(root).toContain('Jul 10, 2026'); // breadcrumb date
+  expect(root).toContain('Pagefind search'); // article body prerendered
+  await expectHydrated(page, '/docs/changelog/v0-2-0/');
+});
+
+test('changelog stays out of the Documentation sidebar and docs index', async ({ request }) => {
+  const doc = await (await request.get('/docs/guides/theming')).text();
+  const sidebar = doc.split('<div id="root">')[1] ?? '';
+  expect(sidebar).not.toContain('v0.1.0');
+  const index = await (await request.get('/docs/')).text();
+  const indexRoot = index.split('<div id="root">')[1] ?? '';
+  // No changelog CATEGORY CARD on the docs index (cards render <h3> labels;
+  // the TopNav tab and the "Changelog" guide's sidebar links are spans).
+  expect(indexRoot).not.toMatch(/<h3[^>]*>Changelog</);
+  expect(indexRoot).toMatch(/<h3[^>]*>Guides</); // cards themselves render
+});
+
+test('changelog entries are searchable via pagefind', async ({ page }) => {
+  await page.goto('/docs/');
+  const hits = await page.evaluate(async () => {
+    const pf = await import(/* @vite-ignore */ '/pagefind/pagefind.js');
+    await pf.init?.();
+    const { results } = await pf.search('front door');
+    const pages = await Promise.all(results.map((r: { data: () => Promise<{ url: string }> }) => r.data()));
+    return pages.map((p) => p.url);
+  });
+  expect(hits).toContain('/docs/changelog/v0-2-0/');
+});
+
 test('Scalar route client-renders via the marker-mismatch fallback', async ({ page, request }) => {
   // /docs/api is not prerendered; static hosts serve the landing-page HTML as
   // the SPA fallback. The route marker ("/") must not match, forcing a clean
