@@ -51,7 +51,8 @@ interface Options {
   siteTitle?: string;
 }
 
-function titleFromFilename(filename: string): string {
+// Pure helpers below are exported for unit testing (see search-index.test.ts).
+export function titleFromFilename(filename: string): string {
   return filename
     .replace(/\.mdx?$/, '')
     .replace(/[-_]/g, ' ')
@@ -70,7 +71,7 @@ function walk(dir: string): string[] {
 
 // Reduce markdown/MDX to plain text for indexing: drop fenced code, inline
 // code, images, link syntax, headings markers, emphasis, blockquotes, tables.
-function toPlainText(md: string): string {
+export function toPlainText(md: string): string {
   return md
     .replace(/```[\s\S]*?```/g, ' ') // fenced code blocks
     .replace(/`[^`]*`/g, ' ') // inline code
@@ -83,7 +84,7 @@ function toPlainText(md: string): string {
     .trim();
 }
 
-function extractHeadings(md: string): SearchHeading[] {
+export function extractHeadings(md: string): SearchHeading[] {
   // Skip fenced code so "# comment" lines inside code don't become headings.
   const noFence = md.replace(/```[\s\S]*?```/g, '');
   const slugger = new GithubSlugger();
@@ -98,7 +99,7 @@ function extractHeadings(md: string): SearchHeading[] {
 }
 
 // First real prose paragraph — skips the H1/title, headings, code, tables.
-function extractExcerpt(raw: string): string {
+export function extractExcerpt(raw: string): string {
   const noFence = raw.replace(/```[\s\S]*?```/g, '');
   for (const block of noFence.split(/\n\s*\n/)) {
     const line = block.trim();
@@ -109,10 +110,11 @@ function extractExcerpt(raw: string): string {
   return '';
 }
 
-function buildEntry(contentDir: string, file: string): SearchEntry {
-  const raw = readFileSync(file, 'utf-8');
+// Parse one doc's raw file content into a SearchEntry, given its path relative
+// to contentDir (POSIX separators). Pure — split from buildEntry's disk read so
+// slug/category/date/default logic can be unit tested without touching the fs.
+export function parseEntry(rel: string, raw: string): SearchEntry {
   const { data: fm, content } = matter(raw);
-  const rel = relative(contentDir, file).replace(/\\/g, '/');
   const slug = rel.replace(/\.mdx?$/, '');
   const parts = slug.split('/');
   const category = parts.length > 1 ? parts[0] : 'general';
@@ -144,6 +146,27 @@ function buildEntry(contentDir: string, file: string): SearchEntry {
   };
 }
 
+function buildEntry(contentDir: string, file: string): SearchEntry {
+  const raw = readFileSync(file, 'utf-8');
+  const rel = relative(contentDir, file).replace(/\\/g, '/');
+  return parseEntry(rel, raw);
+}
+
+export function buildSitemapXml(
+  siteUrl: string,
+  slugs: string[],
+  lastmod: string,
+  includeRoot: boolean,
+): string {
+  const base = siteUrl.replace(/\/$/, '');
+  const urls = [
+    // The landing page (content/home.mdx) lives at the site root.
+    ...(includeRoot ? [`  <url><loc>${base}/</loc><lastmod>${lastmod}</lastmod></url>`] : []),
+    ...slugs.map((slug) => `  <url><loc>${base}/docs/${slug}</loc><lastmod>${lastmod}</lastmod></url>`),
+  ].join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
 function writeSitemap(
   sitemapFile: string,
   siteUrl: string,
@@ -151,15 +174,8 @@ function writeSitemap(
   lastmod: string,
   includeRoot: boolean,
 ): void {
-  const base = siteUrl.replace(/\/$/, '');
-  const urls = [
-    // The landing page (content/home.mdx) lives at the site root.
-    ...(includeRoot ? [`  <url><loc>${base}/</loc><lastmod>${lastmod}</lastmod></url>`] : []),
-    ...slugs.map((slug) => `  <url><loc>${base}/docs/${slug}</loc><lastmod>${lastmod}</lastmod></url>`),
-  ].join('\n');
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
   mkdirSync(dirname(sitemapFile), { recursive: true });
-  writeFileSync(sitemapFile, xml, 'utf-8');
+  writeFileSync(sitemapFile, buildSitemapXml(siteUrl, slugs, lastmod, includeRoot), 'utf-8');
 }
 
 // RSS 2.0 feed of dated changelog entries (newest first). Emitted only on
@@ -168,7 +184,7 @@ function writeSitemap(
 let rssEmitted = false;
 export const hasRss = () => rssEmitted;
 
-function writeRss(rssFile: string, siteUrl: string, siteTitle: string, entries: SearchEntry[]): void {
+export function buildRssXml(siteUrl: string, siteTitle: string, entries: SearchEntry[]): string {
   const base = siteUrl.replace(/\/$/, '');
   const items = entries
     .map(
@@ -182,7 +198,7 @@ function writeRss(rssFile: string, siteUrl: string, siteTitle: string, entries: 
         `    </item>`,
     )
     .join('\n');
-  const xml =
+  return (
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<rss version="2.0">\n` +
     `  <channel>\n` +
@@ -191,9 +207,13 @@ function writeRss(rssFile: string, siteUrl: string, siteTitle: string, entries: 
     `    <description>${escapeHtml(`Release notes and updates for ${siteTitle}.`)}</description>\n` +
     `${items}\n` +
     `  </channel>\n` +
-    `</rss>\n`;
+    `</rss>\n`
+  );
+}
+
+function writeRss(rssFile: string, siteUrl: string, siteTitle: string, entries: SearchEntry[]): void {
   mkdirSync(dirname(rssFile), { recursive: true });
-  writeFileSync(rssFile, xml, 'utf-8');
+  writeFileSync(rssFile, buildRssXml(siteUrl, siteTitle, entries), 'utf-8');
 }
 
 // llms.txt — a curated, link-first index for AI coding assistants (the emerging
